@@ -134,7 +134,7 @@ export class Scene3D {
   }
   setActive(on) { this.active = on; if (on) this.resize(); }
   setMode(mode) { this.mode = mode; this.orbit.enabled = mode === 'site'; this.gorbit.enabled = mode === 'globe'; }
-  resetView() { (this.mode === 'site' ? this.orbit : this.gorbit).reset(); }
+  resetView() { if (this.mode === 'globe' && this.systemView) return this.setSystemView(true); (this.mode === 'site' ? this.orbit : this.gorbit).reset(); }
   zoom(f) { (this.mode === 'site' ? this.orbit : this.gorbit).zoom(f); }
 
   /* ------------------------------------------------------------ site view */
@@ -142,7 +142,12 @@ export class Scene3D {
     const s = this.scene = new THREE.Scene();
     this.cam = new THREE.PerspectiveCamera(46, 1, 0.1, 2600);
     this.orbit = new Orbit(this.cam, this.canvas, new THREE.Vector3(0, 1.5, 0), { phi: 1.12, radius: 70 });
-    s.add(new THREE.AmbientLight(0x5a60a8, 0.5));              // faint fill so shadowed relief stays readable
+    this.ambient = new THREE.AmbientLight(0x5a60a8, 0.5); s.add(this.ambient);  // faint fill so shadowed relief stays readable
+    // Night lighting. Earthshine is real: sunlight reflected by Earth, coming from Earth's
+    // direction and scaled by how much of Earth is lit. The second light is a visual aid only:
+    // a soft, shadowless light from high in the north-west so ridges and craters stay readable.
+    this.earthLight = new THREE.DirectionalLight(0xc8e4ff, 0); s.add(this.earthLight, this.earthLight.target);
+    this.nightFill = new THREE.DirectionalLight(0xa9aef5, 0); this.nightFill.position.copy(dirFrom(315, 24)).multiplyScalar(200); s.add(this.nightFill);
     this.sun = new THREE.DirectionalLight(0xfff1ea, 2.6);
     this.sun.castShadow = true;
     this.sun.shadow.mapSize.set(2048, 2048);
@@ -303,6 +308,14 @@ export class Scene3D {
     this.sun.position.copy(sd).multiplyScalar(200);
     this.sun.target.position.set(0, 0, 0);
     this.sun.intensity = s.sun ? 2.6 : 0;   // far terrain (beyond this patch) already blocks the Sun
+    const earthPhase = Math.max(0, Math.min(1, (1 - sd.dot(ed)) / 2));  // fraction of Earth's disc that is lit, seen from here
+    this.night = !s.sun;
+    this.earthPhase = earthPhase;
+    this.earthLight.position.copy(ed).multiplyScalar(200);
+    this.earthUp = !!s.earth;
+    this.earthLight.intensity = this.night && s.earth ? 0.25 + 1.0 * earthPhase : 0;
+    this.nightFill.intensity = this.night ? 1.05 : 0;
+    this.ambient.intensity = this.night ? 0.38 : 0.5;
     const lp = this.earthLink.geometry.getAttribute('position');
     lp.setXYZ(0, 0, 0.4, 0); lp.setXYZ(1, ep.x, ep.y, ep.z); lp.needsUpdate = true;
     this.earthLink.computeLineDistances();
@@ -350,8 +363,8 @@ export class Scene3D {
   /* ----------------------------------------------------------- globe view */
   _buildGlobe() {
     const s = this.gscene = new THREE.Scene();
-    this.gcam = new THREE.PerspectiveCamera(32, 1, 0.1, 400);
-    this.gorbit = new Orbit(this.gcam, this.canvas, new THREE.Vector3(), { phi: Math.PI / 2, radius: 46, minRadius: 16, maxRadius: 90, minPhi: 0.05, maxPhi: Math.PI - 0.05, enabled: false });
+    this.gcam = new THREE.PerspectiveCamera(32, 1, 0.1, 9000);
+    this.gorbit = new Orbit(this.gcam, this.canvas, new THREE.Vector3(), { phi: Math.PI / 2, radius: 46, minRadius: 16, maxRadius: 2600, minPhi: 0.05, maxPhi: Math.PI - 0.05, enabled: false });
     s.add(new THREE.AmbientLight(0x4350ce, 0.22));
     this.gsun = new THREE.DirectionalLight(0xffffff, 2.8); s.add(this.gsun);
     // Sphere with our own UVs: u = lon/360 (0..360 E), v = (lat+90)/180
@@ -379,6 +392,80 @@ export class Scene3D {
     const nl = labelSprite('N', '#c9c7db', 72); nl.position.set(0, 13.4, 0); nl.scale.set(2.4, 1.2, 1);
     const sl = labelSprite('S', '#c9c7db', 72); sl.position.set(0, -13.4, 0); sl.scale.set(2.4, 1.2, 1);
     s.add(this.gSite, this.gSiteRing, this.gEarthDot, this.gSunDot, this.gEarthLine, this.gSunLine, axis, this.gEarthLbl, this.gSunLbl, nl, sl);
+    this._buildEarthAndSun(s);
+  }
+
+  /**
+   * Earth and Sun for the globe view. Directions, lighting, Earth's tilt and spin
+   * (which face of Earth points at the Moon) are real; distances are shortened so
+   * all three bodies fit on screen.
+   *   Earth: true size relative to the Moon (radius 6371 km), placed 10× closer
+   *          than reality. Colour from NASA Blue Marble Next Generation.
+   *   Sun:   emissive sphere with measured limb darkening and the colour of a
+   *          5772 K photosphere; size and distance not to scale.
+   */
+  _buildEarthAndSun(s) {
+    this.gEarthR = 10 * 6371.0 / 1737.4;
+    this.gEarthDist = 220;
+    this.gSunDist = 1600; this.gSunR = 48;
+    const W = 128, H = 64, pos = [], uv = [], idx = [];
+    for (let j = 0; j <= H; j++) for (let i = 0; i <= W; i++) {
+      const lat = (90 - j * 180 / H) * DEG, lon = (-180 + i * 360 / W) * DEG;
+      pos.push(Math.cos(lat) * Math.cos(lon), Math.cos(lat) * Math.sin(lon), Math.sin(lat)); uv.push(i / W, 1 - j / H);
+    }
+    for (let j = 0; j < H; j++) for (let i = 0; i < W; i++) { const a = j * (W + 1) + i, b = a + W + 1; idx.push(a, b, a + 1, a + 1, b, b + 1); }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('normal', new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); g.setIndex(idx);
+    // Earth's night side keeps a faint blue so its outline stays visible against space.
+    this.gEarthMat = new THREE.MeshStandardMaterial({ color: 0x3a5c99, roughness: 0.85, metalness: 0, emissive: 0x0b1530, emissiveIntensity: 0.6 });
+    this.gEarth = new THREE.Mesh(g, this.gEarthMat);
+    this.gEarth.matrixAutoUpdate = false;
+    new THREE.TextureLoader().load('graphics/textures/earth_bmng_200405_2048.jpg', tex => {
+      tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
+      this.gEarthMat.map = tex; this.gEarthMat.color.set(0xffffff); this.gEarthMat.needsUpdate = true;
+    }, undefined, () => console.warn('[3D] Earth texture missing; plain sphere shown'));
+    // Thin atmosphere: a rim that glows on the sunlit side.
+    this.gAtmoMat = new THREE.ShaderMaterial({
+      uniforms: { sunDir: { value: new THREE.Vector3(1, 0, 0) } },
+      vertexShader: 'varying vec3 vN; varying vec3 vV; varying vec3 vW; void main(){ vec4 w = modelMatrix * vec4(position,1.0); vW = normalize(mat3(modelMatrix) * normal); vN = normalize(normalMatrix * normal); vV = normalize(-(viewMatrix * w).xyz); gl_Position = projectionMatrix * viewMatrix * w; }',
+      fragmentShader: 'uniform vec3 sunDir; varying vec3 vN; varying vec3 vV; varying vec3 vW; void main(){ float rim = pow(1.0 - max(dot(vN, vV), 0.0), 2.6); float day = smoothstep(-0.25, 0.35, dot(vW, sunDir)); gl_FragColor = vec4(vec3(0.42, 0.66, 1.0) * rim * (0.15 + 1.1 * day), rim); }',
+      transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.FrontSide
+    });
+    this.gAtmo = new THREE.Mesh(g, this.gAtmoMat);
+    this.gAtmo.matrixAutoUpdate = false;
+    // Sun: I(mu)/I(1) = 1 - u1 (1 - mu) - u2 (1 - mu)^2 with u1 = 0.47, u2 = 0.23 (visible light,
+    // Neckel & Labs 1994 / Cox 2000), and the limb slightly redder, as observed.
+    const sunMat = new THREE.ShaderMaterial({
+      vertexShader: 'varying vec3 vN; void main(){ vN = normalize(normalMatrix * normal); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }',
+      fragmentShader: 'varying vec3 vN; void main(){ float mu = clamp(vN.z, 0.0, 1.0); float x = 1.0 - mu; float I = 1.0 - 0.47 * x - 0.23 * x * x; vec3 core = vec3(1.0, 0.957, 0.918); vec3 limb = vec3(1.0, 0.78, 0.56); gl_FragColor = vec4(mix(limb, core, sqrt(mu)) * I * 1.15, 1.0); }'
+    });
+    this.gSunBody = new THREE.Mesh(new THREE.SphereGeometry(this.gSunR, 48, 32), sunMat);
+    this.gSunHalo = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.glow, color: 0xffe2c4, transparent: true, opacity: 0.85, depthWrite: false, blending: THREE.AdditiveBlending }));
+    this.gSunHalo.scale.setScalar(this.gSunR * 9);
+    this.gEarthTag = labelSprite('Earth', '#bfedf8', 64); this.gEarthTag.scale.set(14, 7, 1);
+    this.gSunTag = labelSprite('Sun', '#e888a0', 64); this.gSunTag.scale.set(60, 30, 1);
+    s.add(this.gEarth, this.gAtmo, this.gSunHalo, this.gSunBody, this.gEarthTag, this.gSunTag);
+  }
+
+  /** Swing the globe camera out to show the Moon and Earth side by side, seen from above the plane they share with the Sun. */
+  setSystemView(on) {
+    this.systemView = on;
+    for (const o of [this.gEarthLbl, this.gSunLbl]) o.visible = !on;
+    const o = this.gorbit;
+    if (on && this._gDirs) {
+      const { earth, sun } = this._gDirs;
+      let c = new THREE.Vector3().crossVectors(earth, sun);
+      if (c.lengthSq() < 1e-6) c.set(0, 1, 0);
+      c.normalize();
+      if (c.y < 0) c.negate();
+      o.target.copy(earth).multiplyScalar(this.gEarthDist * 0.5);
+      o.phi = Math.min(o.maxPhi, Math.max(o.minPhi, Math.acos(c.y))); o.theta = Math.atan2(c.x, c.z); o.radius = 560;
+    } else {
+      o.target.set(0, 0, 0);
+      Object.assign(o, o.home);
+    }
   }
 
   /**
@@ -467,7 +554,11 @@ export class Scene3D {
       const prim = json.meshes[0].primitives[0];
       const g = new THREE.BufferGeometry();
       g.setAttribute('position', new THREE.BufferAttribute(view(prim.attributes.POSITION, Float32Array, 3), 3));
-      g.setAttribute('normal', new THREE.BufferAttribute(view(prim.attributes.NORMAL, Float32Array, 3), 3));
+      // The model is a sphere, so its true normal is just the direction from the centre. Using that
+      // instead of the file's normals removes the jagged day/night line its coarse facets produce.
+      { const P = g.getAttribute('position').array, N = new Float32Array(P.length);
+        for (let i = 0; i < P.length; i += 3) { const l = Math.hypot(P[i], P[i + 1], P[i + 2]) || 1; N[i] = P[i] / l; N[i + 1] = P[i + 1] / l; N[i + 2] = P[i + 2] / l; }
+        g.setAttribute('normal', new THREE.BufferAttribute(N, 3)); }
       g.setAttribute('uv', new THREE.BufferAttribute(view(prim.attributes.TEXCOORD_0, Float32Array, 2), 2));
       const it = json.accessors[prim.indices].componentType;
       g.setIndex(new THREE.BufferAttribute(view(prim.indices, it === 5125 ? Uint32Array : Uint16Array, 1), 1));
@@ -531,12 +622,29 @@ export class Scene3D {
     };
     put(this.gEarthDot, this.gEarthLine, this.gEarthLbl, earth);
     put(this.gSunDot, this.gSunLine, this.gSunLbl, sun);
+    this._gDirs = { earth: earth.clone(), sun: sun.clone() };
+    // Earth: centre on the true direction, axes from its real pole and Greenwich meridian.
+    if (g.earthPole && g.greenwich) {
+      const P = moonVec(g.earthPole.lat, g.earthPole.lon), G = moonVec(g.greenwich.lat, g.greenwich.lon);
+      const Y = new THREE.Vector3().crossVectors(P, G).normalize();
+      const m = new THREE.Matrix4().makeBasis(G, Y, P).scale(new THREE.Vector3(this.gEarthR, this.gEarthR, this.gEarthR));
+      m.setPosition(earth.clone().multiplyScalar(this.gEarthDist));
+      this.gEarth.matrix.copy(m); this.gEarth.matrixWorldNeedsUpdate = true;
+      this.gAtmo.matrix.copy(m).multiply(new THREE.Matrix4().makeScale(1.025, 1.025, 1.025)); this.gAtmo.matrixWorldNeedsUpdate = true;
+    }
+    this.gAtmoMat.uniforms.sunDir.value.copy(sun);
+    this.gEarthTag.position.copy(earth).multiplyScalar(this.gEarthDist + this.gEarthR + 12);
+    this.gSunBody.position.copy(sun).multiplyScalar(this.gSunDist);
+    this.gSunHalo.position.copy(this.gSunBody.position);
+    this.gSunTag.position.copy(sun).multiplyScalar(this.gSunDist - this.gSunR * 3);
     if (recenter) {
       // Look at the site from slightly toward the equator so polar sites sit near the limb, not dead centre.
       const viewLat = Math.max(-62, Math.min(62, g.lat));
       this.gorbit.phi = (90 - viewLat) * DEG; this.gorbit.theta = Math.atan2(site.x, site.z);
       if (Math.abs(g.lat) > 89.9) this.gorbit.theta = 0;
       this.gorbit.radius = 46; this.gorbit.home = { theta: this.gorbit.theta, phi: this.gorbit.phi, radius: 46 };
+      this.gorbit.target.set(0, 0, 0);
+      if (this.systemView) this.setSystemView(true);
     }
   }
 }

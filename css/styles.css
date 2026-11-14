@@ -589,7 +589,7 @@ body[data-level="pro"] .stage { flex: 1; height: auto; min-height: max(420px, mi
 .stage-top { position: absolute; z-index: 4; left: var(--s4); right: var(--s4); top: var(--s3); display: flex; justify-content: space-between; gap: var(--s3); flex-wrap: wrap; pointer-events: none; }
 .stage-top > * { pointer-events: auto; }
 .stage-top .view-tabs { position: static; }
-.pano-key { top: auto; bottom: 38px; }
+.pano-key { top: 58px; bottom: auto; }
 
 .level { display: flex; padding: 3px; border-radius: 999px; background: rgb(0 0 0 / 0.55); border: 1px solid var(--line-strong); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 .level button { border: 0; background: none; padding: 6px 14px; border-radius: 999px; cursor: pointer; color: var(--mist-2); font-size: 13px; }
@@ -688,7 +688,7 @@ body[data-level="pro"] .sweep-grid { grid-template-columns: repeat(auto-fill, mi
   .rail .panel { border-right: 0; }
   .score-num { font-size: 80px; }
   .stage-top { left: var(--s3); right: var(--s3); }
-  .pano-key { bottom: 44px; }
+  .pano-key { top: 96px; }
   body[data-level="pro"] .stage { min-height: 360px; } .stage { height: 360px; }
 }
 

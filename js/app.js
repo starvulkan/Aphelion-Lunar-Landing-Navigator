@@ -545,6 +545,13 @@ class App {
     $('#zoom-in').addEventListener('click', () => this.scene3d?.zoom(0.8));
     $('#zoom-out').addEventListener('click', () => this.scene3d?.zoom(1.25));
     $('#reset-view').addEventListener('click', () => this.scene3d?.resetView());
+    $('#system-btn').addEventListener('click', e => {
+      const on = !this.scene3d?.systemView;
+      this.scene3d?.setSystemView(on);
+      e.currentTarget.setAttribute('aria-pressed', String(on));
+      e.currentTarget.textContent = on ? 'Back to the Moon' : 'Show Earth and Sun';
+      this.sceneTags();
+    });
   }
 
   async initScene() {
@@ -578,6 +585,7 @@ class App {
     $('#scene-tools').hidden = view === 'pano';
     document.querySelector('#scene-tools label').hidden = view !== 'site3d';
     $('#scene-tags').hidden = view === 'pano';
+    $('#system-btn').hidden = view !== 'globe';
     this.scene3d?.setActive(view !== 'pano' && this.state.mode !== 'learn');
     if (view === 'globe') {
       this.scene3d?.setMode('globe');
@@ -596,10 +604,13 @@ class App {
     const v = this.state.view, el3 = $('#scene-tags'), msg = $('#scene-msg');
     msg.hidden = true;
     if (v === 'pano') { el3.textContent = ''; return; }
-    if (v === 'globe') { el3.textContent = this.scene3d?.moonModel ? "Drag to turn the Moon. NASA's Moon model (LRO imagery), lit from the true direction of the Sun." : (this.scene3d?.modelError ? "NASA's Moon model could not load, showing LOLA relief instead. " : '') + 'Drag to turn the Moon. Lit from the true direction of the Sun; relief from LOLA, exaggerated ×6.'; return; }
+    if (v === 'globe') { el3.textContent = this.scene3d?.moonModel ? "Drag to turn the Moon. NASA's Moon model (LRO imagery), lit from the true direction of the Sun." : (this.scene3d?.modelError ? "NASA's Moon model could not load, showing LOLA relief instead. " : '') + 'Drag to turn the Moon. Lit from the true direction of the Sun; relief from LOLA, exaggerated ×6.';
+      if (this.scene3d?.systemView) el3.textContent = "Earth (NASA Blue Marble) and the Sun in their true directions, with Earth's real tilt and spin. Earth is drawn at its true size next to the Moon but 10× closer; the Sun's size and distance are not to scale. Ctrl + scroll to zoom.";
+      return; }
     const p = this._scenePatch;
     if (!p) { msg.hidden = false; msg.textContent = this.terrain.patches || this.terrain.demsReady ? 'No terrain for this point.' : 'Loading LOLA terrain…'; el3.textContent = ''; return; }
-    el3.textContent = `84 km across, rings every 10 km. Relief ${$('#exag').value === '1' ? 'at true scale' : '×' + $('#exag').value}. ${p.source}. Drag to orbit, Ctrl + scroll to zoom.`;
+    const night = !this.scene3d?.night ? '' : this.scene3d.earthUp ? ` Night: lit by earthshine (Earth is ${Math.round((this.scene3d.earthPhase || 0) * 100)} % full) plus a soft guide light so the relief stays readable. Real ground would look much darker.` : ' Night, and Earth is below the horizon: a soft guide light keeps the relief readable. Real ground would be almost black.';
+    el3.textContent = `84 km across, rings every 10 km. Relief ${$('#exag').value === '1' ? 'at true scale' : '×' + $('#exag').value}. ${p.source}. Drag to orbit, Ctrl + scroll to zoom.${night}`;
   }
 
   /** Push the current site / time into the 3D scene. */

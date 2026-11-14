@@ -51,3 +51,7 @@ Referenced in `js/lessons.js` (`BADGES` and `CHALLENGES`). Shown greyed out unti
 ## 3D model
 
 `models/moon_small.glb` — NASA's original Moon model (NASA SVS 14959, credit: NASA's Goddard Space Flight Center). `models/moon_web.glb` (desktop, 4 MB) and `models/moon_mobile.glb` (phones, 2.2 MB) — the same model with a JPEG texture, which is what the app loads. Rebuild both with `python3 tools/make-web-moon.py`. Not placeholders; keep both. If you change the model, bump `MODEL_CACHE` in `js/scene3d.js` so browsers drop the old cached copy.
+
+## Textures
+
+`textures/earth_bmng_200405_2048.jpg` — NASA Blue Marble Next Generation (May 2004, topography and bathymetry), used for Earth in the Moon globe view. Credit: NASA Earth Observatory / Reto Stöckli. Not a placeholder.

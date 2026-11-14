@@ -523,9 +523,19 @@ export class EphemerisCalculator {
       const z = u[0] * ez[0] + u[1] * ez[1] + u[2] * ez[2];
       return { lat: Math.asin(Math.max(-1, Math.min(1, z))) * DEG, lon: ((Math.atan2(y, x) * DEG) + 540) % 360 - 180 };
     };
+    // Earth's orientation, for drawing it: its north pole and the direction of the Greenwich
+    // meridian, both expressed as Moon-fixed directions. Greenwich mean sidereal time from
+    // Meeus eq. 12.4 (nutation, under 0.005°, is ignored).
+    const JD = this.toJulian(date);
+    const gmst = norm360(280.46061837 + 360.98564736629 * (JD - J2000) + 0.000387933 * T * T - T * T * T / 38710000);
     return {
       sun: toBody([sun.x - moon.x, sun.y - moon.y, sun.z - moon.z]),
-      earth: toBody([-moon.x, -moon.y, -moon.z])
+      earth: toBody([-moon.x, -moon.y, -moon.z]),
+      earthPole: toBody([0, 0, 1]),
+      greenwich: toBody([cosD(gmst), sinD(gmst), 0]),
+      gmst,
+      earthKm: Math.hypot(moon.x, moon.y, moon.z),
+      sunKm: Math.hypot(sun.x - moon.x, sun.y - moon.y, sun.z - moon.z)
     };
   }
 
