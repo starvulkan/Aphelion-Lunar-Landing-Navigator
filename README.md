@@ -226,7 +226,7 @@ python3 -m http.server 8000        # or: npx serve .
 ```
 
 **Use the web app version at:**
-[web-link]: https://starvulkan.github.io/Aphelion-Lunar-Landing-Navigator/
+https://starvulkan.github.io/Aphelion-Lunar-Landing-Navigator/
 
 ## 🗂️ Project layout
 
