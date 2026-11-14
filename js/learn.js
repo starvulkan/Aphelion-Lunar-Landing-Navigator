@@ -2,10 +2,10 @@
  * Learn mode: lessons, live labs, quizzes, missions, XP and badges.
  * Labs and missions use the same engine and LOLA data as Mission mode.
  */
-import { LESSONS, CHALLENGES, RANKS, BADGES } from './lessons.js';
-import { lineChart, C } from './viz.js';
-import { SITES } from './sites.js';
-import { seasonYear } from './season.js';
+import { LESSONS, CHALLENGES, RANKS, BADGES } from './lessons.js?v=202611142146';
+import { lineChart, C } from './viz.js?v=202611142146';
+import { SITES } from './sites.js?v=202611142146';
+import { seasonYear } from './season.js?v=202611142146';
 
 const $ = s => document.querySelector(s);
 const DAY = 86400000;

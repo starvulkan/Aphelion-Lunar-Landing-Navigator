@@ -78,6 +78,7 @@ jobs:
           rm -f _site/graphics/README.md
           rm -f _site/graphics/models/moon_small.glb   # original kept in the repo; the app loads moon_web.glb
           touch _site/.nojekyll
+          node tools/stamp-version.mjs "${GITHUB_SHA::12}" _site   # cache-busting: new deploys never mix old CSS/JS
           du -sh _site
 
       - name: Upload artifact
