@@ -55,3 +55,7 @@ Referenced in `js/lessons.js` (`BADGES` and `CHALLENGES`). Shown greyed out unti
 ## Textures
 
 `textures/earth_bmng_200405_2048.jpg` — NASA Blue Marble Next Generation (May 2004, topography and bathymetry), used for Earth in the Moon globe view. Credit: NASA Earth Observatory / Reto Stöckli. Not a placeholder.
+
+## README graphics
+
+`readme/` holds the images used in the project README: `banner.svg` and `one-month.svg` (drawn from real LOLA horizons and Aphelion's Sun/Earth tracks), `divider.svg`, and app screenshots (`*.jpg`). All are AI-generated placeholders and carry a visible "AI-generated" watermark, as NASA Space Apps requires. Replace them with the team's own versions before submitting.

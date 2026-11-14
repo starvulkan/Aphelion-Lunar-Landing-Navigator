@@ -1,93 +1,325 @@
-# Aphelion — Lunar Landing Navigator
+<!-- ======================================================================
+     Aphelion · Lunar Landing Navigator
+     Placeholder README for the team's own version. Graphics in
+     graphics/readme/ are AI-generated placeholders and are watermarked.
+     ====================================================================== -->
 
-A web app for comparing lunar landing sites and dates. It shows where the Sun and Earth sit against the **real terrain horizon** of a site, and how long a lander would have sunlight for power and a line of sight to Earth for radio.
+<p align="center">
+  <img src="graphics/readme/banner.svg" alt="Aphelion. Land where the Sun never sets. The real terrain horizon of the Shackleton–de Gerlache ridge, with the Sun skimming it and Earth bobbing above it over one month." width="100%">
+</p>
 
-Built for the 2026 NASA Space Apps Challenge.
+<p align="center">
+  <a href="https://starvulkan.github.io/Aphelion-Lunar-Landing-Navigator/"><img alt="Open the live app" src="https://img.shields.io/badge/open_the_live_app-%E2%86%97-bfedf8?style=for-the-badge&labelColor=000000"></a>
+  <a href="DATA_SOURCES.md"><img alt="Every number cited" src="https://img.shields.io/badge/every_number-cited-e888a0?style=for-the-badge&labelColor=000000"></a>
+  <a href="VERIFY.md"><img alt="Checked against JPL Horizons" src="https://img.shields.io/badge/checked_against-JPL_Horizons-4350ce?style=for-the-badge&labelColor=000000"></a>
+</p>
+<p align="center">
+  <img alt="NASA Space Apps 2026" src="https://img.shields.io/badge/NASA_Space_Apps-2026_·_The_Next_Frontier-c9c7db?style=flat-square&labelColor=000000">
+  <img alt="Local event" src="https://img.shields.io/badge/local_event-Tegucigalpa,_Honduras-c9c7db?style=flat-square&labelColor=000000">
+  <img alt="No build step" src="https://img.shields.io/badge/build_step-none-c9c7db?style=flat-square&labelColor=000000">
+  <img alt="Licence" src="https://img.shields.io/badge/licence-Apache_2.0-c9c7db?style=flat-square&labelColor=000000">
+</p>
 
-## Two modes
+> [!NOTE]
+> **This is a placeholder demo.** It exists so the team can see a complete, working version of the idea and take inspiration from it while building our own. Graphics marked "AI-generated" or "AI-assisted placeholder" will be replaced by the team's final artwork. See [Use of AI](#-use-of-artificial-intelligence).
 
-**Mission** — for planners. Pick a site and a landing time and get (switch between **Professional**, every number at a glance, and **Educational**, the key points in plain words):
-- an overall score from 0 to 100 built from power, comms, night survival and terrain slope
-- a 3D view of the real LOLA terrain around the site, lit by the Sun from its true direction with cast shadows, plus a Moon globe and a 360° horizon panorama
-- a year view ("Season and patterns") with the team's SAOQ season index, the best landing day, longest light and dark runs, and how strongly the site follows the season
-- time to the next sunset/sunrise and Earthset/Earthrise, from any moment you scrub to
-- sunlight, Earth-in-view and "both" percentages, plus the longest dark spell
-- "If the landing slips" (±1–2 days) and a 45-day grid of the best landing days
-- a sky-dome plot, a comparison table of pinned scenarios with CSV export, and shareable links
-- a one-click check of any value against NASA/JPL Horizons
+<br>
 
-**Learn** — for students and the public. Ten short lessons, each with a live lab driven by the same engine and terrain data, quizzes, XP ranks, badges, and four missions that the app checks against your real Mission-mode scenario.
+<h3 align="center"><em>At the Moon's south pole the Sun never climbs more than a couple of degrees.<br>One ridge gets light for months. The crater beside it has been dark for billions of years.<br>Aphelion shows you which is which, for any place and any day.</em></h3>
 
-## Data
+<br>
 
-- **Ephemeris** — computed in the browser for any date (Meeus; IAU 2009 lunar orientation). Checked against JPL Horizons: worst difference 0.014° over 434 samples.
-- **Terrain** — NASA LRO LOLA grids from the PDS Geosciences Node. Horizons for 36 curated sites are in `data/horizons.json`; custom coordinates use LOLA tiles built at deploy time.
-- **Sites** — Apollo, Chang'e, Chandrayaan-3, SLIM, CLPS landers, the nine Artemis candidate regions, Chang'e 7, and reference points, each with a cited source.
+<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
-Full citations: [DATA_SOURCES.md](DATA_SOURCES.md). How to check every number yourself: [VERIFY.md](VERIFY.md).
+## 🧭 Contents
 
-## Run locally
+| | | |
+|---|---|---|
+| [The challenge](#-the-challenge) | [What we built](#-what-we-built-high-level-summary) | [Tour](#-a-quick-tour) |
+| [How it works](#-how-it-works) | [The overall score](#-the-overall-score) | [NASA data](#-nasa-data) |
+| [Other data and tools](#-space-agency-partner-and-other-data) | [Is it right?](#-is-it-right-validity) | [Judging criteria](#-how-it-meets-the-judging-criteria) |
+| [Use of AI](#-use-of-artificial-intelligence) | [Run it](#-run-it-yourself) | [Project layout](#-project-layout) |
+| [What's next](#-whats-next) | [Team](#-team) | [Credits and licence](#-credits-and-licence) |
 
-No build step and no dependencies.
+<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
+
+## 🌗 The challenge
+
+Missions to the lunar south pole live or die by two things: **sunlight** for power and a **line of sight to Earth** for radio. Near the pole the Sun and Earth both sit almost on the horizon, so a ridge a few kilometres away can decide whether a lander is lit, cold, or cut off. Tools that can answer this already exist, but they are built for specialists and slow to use.
+
+The challenge asked for an intuitive web app that lets **mission planners, educators and the public** compare landing sites and dates quickly, seeing where the Sun and Earth are relative to the horizon, how long power and direct-to-Earth contact last, and how that changes over a lunar day or a season.
+
+<p align="center">
+  <img src="graphics/readme/one-month.svg" alt="One month at three south-pole sites a few kilometres apart. The connecting ridge has sunlight 100 % of the time and Earth 47 %. Malapert Massif has sunlight 100 % and Earth 63 %. Shackleton crater floor has neither." width="100%">
+</p>
+
+<p align="center"><sub>Three places a few kilometres apart, the same month, very different missions. Real LOLA terrain, computed by Aphelion.</sub></p>
+
+## 🚀 What we built (high-level summary)
+
+**Aphelion** is a free web app that runs entirely in the browser. Pick a landing site (or type any coordinates), pick a date and a surface stay, and it shows:
+
+- **Where the Sun and Earth are**, against the **real terrain horizon** of that exact spot, built from NASA's Lunar Orbiter Laser Altimeter (LOLA) data.
+- **How much power and radio contact the stay gets**: sunlight %, Earth-in-view %, both at once, the longest dark spell, and the time to the next sunset or Earthset.
+- **A single overall score from 0 to 100** so sites and dates can be compared at a glance.
+- **How the answer changes** if the landing slips a day or two, across a calendar of landing days, and across the whole year (the south pole has seasons).
+
+It has two modes for two audiences:
+
+| | **Mission mode** | **Learn mode** |
+|---|---|---|
+| **For** | Planners, engineers, judges in a hurry | Students, teachers, the curious public |
+| **Feels like** | A flight console: every number on one screen | A playful course: big type, glass cards, missions |
+| **Inside** | 3D terrain with real shadows, 360° panorama, Moon globe with Earth and Sun, timeline, sky dome, slip table, season chart, comparison table, CSV export | 10 short lessons with live labs, quizzes, XP, ranks, badges, and 4 missions checked against your real scenario |
+| **Levels** | **Professional** (all the data) or **Educational** (the same scenario as a friendly landing report) | |
+
+**Why it matters:** the same few kilometres can mean months of light or permanent darkness. Making that visible in seconds helps planners screen options, and helps everyone else understand why the Moon's south pole is so hard, and so worth it.
+
+<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
+
+## 📸 A quick tour
+
+<table>
+  <tr>
+    <td width="50%"><img src="graphics/readme/mission-pro.jpg" alt="Mission mode, Professional level: 3D terrain on the left, score of 99 and Sun and Earth tables on the right"><br><sub><b>Mission · Professional.</b> The view and a dense summary side by side: score, Sun and Earth elevation, azimuth and clearance above the terrain, and stay totals.</sub></td>
+    <td width="50%"><img src="graphics/readme/mission-edu.jpg" alt="Mission mode, Educational level: Malapert Massif is a great pick, with a score ring and four cards"><br><sub><b>Mission · Educational.</b> The same scenario as a landing report: power, radio link, longest night and ground slope, each with a picture and a "Learn why" link.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="graphics/readme/panorama.jpg" alt="360 degree panorama of the terrain horizon with the Sun and Earth paths"><br><sub><b>Panorama.</b> The real horizon all the way round, with the Sun's and Earth's paths over the stay.</sub></td>
+    <td><img src="graphics/readme/globe-system.jpg" alt="Moon globe with Earth and the Sun shown in their true directions"><br><sub><b>Moon, Earth and Sun.</b> NASA's Moon model, Earth from NASA Blue Marble with its real tilt and spin, the Sun from measured physics.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="graphics/readme/night-terrain.jpg" alt="3D terrain of Shackleton crater at night"><br><sub><b>3D terrain at night.</b> Earthshine plus a soft guide light keep craters readable when the Sun is gone.</sub></td>
+    <td><img src="graphics/readme/calendar.jpg" alt="Landing calendar with two months of days shaded by score"><br><sub><b>Landing calendar.</b> Every day you could land, shaded by sunlight, Earth contact or both.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="graphics/readme/learn-hub.jpg" alt="Learn mode home: Land where the Sun never sets"><br><sub><b>Learn mode.</b> A course in ten short lessons, with ranks and badges.</sub></td>
+    <td><img src="graphics/readme/lesson.jpg" alt="A lesson page with text and a live lab"><br><sub><b>Lessons with live labs.</b> Each lab runs on the same engine and terrain as Mission mode.</sub></td>
+  </tr>
+</table>
+
+<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
+
+## ⚙️ How it works
+
+Everything runs **in the browser**. There is no server and no build step; GitHub Pages serves static files.
+
+```mermaid
+flowchart LR
+  subgraph NASA["NASA data"]
+    LOLA["LRO LOLA<br/>terrain grids<br/>(PDS Geosciences)"]
+    JPL["JPL Horizons<br/>ephemerides"]
+    SVS["SVS Moon model<br/>+ Blue Marble Earth"]
+  end
+  subgraph Build["Deploy workflow (GitHub Actions)"]
+    RAY["Horizon ray-march<br/>1° steps, 400 km"]
+    CHECK{"Engine vs Horizons<br/>off by > 0.1°?"}
+  end
+  subgraph Browser["In your browser"]
+    EPH["Ephemeris engine<br/>Meeus + IAU 2009"]
+    VIS["Visibility timeline<br/>Sun / Earth vs horizon"]
+    SCORE["Overall score<br/>0–100"]
+    UI["Mission + Learn<br/>3D · panorama · globe · charts"]
+  end
+  LOLA --> RAY --> VIS
+  JPL --> CHECK
+  EPH --> CHECK
+  CHECK -- "no: publish" --> UI
+  EPH --> VIS --> SCORE --> UI
+  SVS --> UI
+```
+
+1. **Where is the Sun, where is Earth?** The engine computes both for any moment, from the Moon's surface, using Meeus' *Astronomical Algorithms* (chapters 25 and 47) and the IAU 2009 model of the Moon's orientation. Horizons blocks requests from web pages, so instead of calling it live, the deploy checks the engine against a stored Horizons table and refuses to publish if it is off by more than 0.1°.
+2. **What does the horizon look like?** For every site, a ray is marched outwards from 2 m above the ground in each of 360 directions over the LOLA terrain, up to 400 km, and the highest angle it meets is the horizon in that direction.
+3. **Is it visible?** The Sun or Earth counts as visible when the centre of its disc is above that terrain horizon. Doing this every few minutes over the stay gives the timeline, the percentages, the next rise or set, and the longest dark spell.
+4. **What's the season?** The south pole has a mild but real season. The app uses our team report's *SAOQ* index (how far south the sub-solar point is) and shows a whole year for the site, the best landing day, and how strongly the site follows the season.
+
+## 🎯 The overall score
+
+One number to compare options, extending the balance score of the team's earlier SELENE prototype (which used √(sunlight × Earth)):
+
+$$
+\text{score} = 100 \times P^{\,w_P}\, C^{\,w_C}\, N^{\,w_N}\, T^{\,w_T}
+$$
+
+| Factor | What it measures | Balanced weight |
+|---|---|---|
+| **P · Power** | share of the stay with the Sun above the terrain | 0.35 |
+| **C · Comms** | share of the stay with Earth above the terrain | 0.35 |
+| **N · Night survival** | 1 − (longest dark spell ÷ stay length) | 0.15 |
+| **T · Terrain** | ground slope from LOLA: full marks at ≤ 5°, near zero at ≥ 20° | 0.15 |
+
+It is a geometric mean, so a site with **no** sunlight or **no** Earth contact scores 0, however good the rest is. "Power first" and "Comms first" weightings are one click away. The weights are the team's design choice, not a NASA standard: the score is for screening and comparing, not for certifying a landing site.
+
+<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
+
+## 🛰️ NASA data
+
+| What | NASA source | How Aphelion uses it |
+|---|---|---|
+| **Terrain** | LRO **LOLA** gridded data records (`LDEM_60S_240M`, `LDEM_75N_240M`, `LDEM_64`, `LDEM_16`, `LDEM_4`), PDS Geosciences Node | Terrain horizons for every site, ground height and slope, the 3D terrain patches, the globe's relief |
+| **Sun and Earth positions** | **JPL Horizons** (DE440/DE441) | The reference the in-browser engine is checked against on every deploy, plus a one-click "check this in Horizons" link for any scenario |
+| **Moon globe** | NASA **SVS 14959**, *Moon 3D Models for Web, AR, and Animation* (LRO imagery) | The 3D Moon in the globe view |
+| **Earth** | NASA Earth Observatory **Blue Marble: Next Generation** (via NASA WorldWind) | Earth's surface in the globe view |
+| **Mapping references** | NASA **Moon Trek**, ASU **LROC QuickMap** (LRO data) | Cross-checking site positions and terrain by eye |
+| **Landing sites** | NASA Artemis III candidate regions, CLPS mission data, Apollo Lunar Surface Journal, LROC landing-site localisations, NASA Technical Reports Server | The 36 curated sites, each with its own citation |
+
+Full citations, versions and processing for every item: **[DATA_SOURCES.md](DATA_SOURCES.md)**.
+
+## 🤝 Space agency partner and other data
+
+| Resource | Use | Licence or terms |
+|---|---|---|
+| JAXA (SLIM), ISRO (Chandrayaan-3), CNSA (Chang'e 3–7), Roscosmos/IKI (Luna 25) mission releases | Landing-site coordinates | Public mission releases, cited per site |
+| Team report *Lunar South Pole Mission Opportunity Analysis* | SAOQ season index and the season windows the app reproduces | Team's own work |
+| Team's SELENE prototype | Starting point for the 3D site scene and the balance score | Team's own work (MIT) |
+| three.js r170 | 3D rendering | MIT |
+| Archivo, Instrument Serif (Google Fonts) | Typefaces | SIL Open Font License |
+| Bright-star list (`data/stars.json`) | Stars in the 3D sky | Carried over from SELENE; original catalogue to be confirmed |
+| Published papers (De Rosa et al. 2012, Davies & Colvin 2000, Wang et al. 2024, and others) | Site positions and lesson facts | Cited in DATA_SOURCES.md |
+
+<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
+
+## ✅ Is it right? (validity)
+
+We wanted no guesswork, so every claim can be checked **outside the app**:
+
+| Check | Result |
+|---|---|
+| Sun and Earth positions vs **JPL Horizons** (434 samples, 7 sites, 30 days) | worst difference **0.014°**, mean **0.003°**. For scale: the Sun's disc is 0.53° wide |
+| Season analysis vs the team report's Horizons DE441 values | yearly minima on the **same dates**, within **0.002°**; window ends match to the day except two, which differ by one day |
+| Earth's orientation in the globe view | the point on Earth facing the Moon matches the Moon's declination and longitude from Greenwich sidereal time |
+| Every deploy | fails automatically if the engine drifts more than 0.1° from Horizons |
+
+Do it yourself, step by step, with JPL Horizons, LROC QuickMap and Moon Trek: **[VERIFY.md](VERIFY.md)**.
+
+**Known limits, stated in the app too:** terrain is 240 m per pixel near the pole, so boulders and small craters next to a lander are not resolved; visibility uses the centre of the Sun's and Earth's discs; the overall score is a screening aid.
+
+## 🏆 How it meets the judging criteria
+
+NASA Space Apps judges projects on five criteria. This is where to look for each:
+
+| Criterion | What judges look for | Where Aphelion answers it |
+|---|---|---|
+| **Impact** | Real-world value | Screens landing sites and dates in seconds instead of hours; Learn mode turns the same science into a free course for schools |
+| **Creativity** | Originality | One engine, two audiences: a flight-console view and a game-like landing report of the *same* scenario; the season index from our own report built into a live year chart; Moon, Earth and Sun in true directions |
+| **Validity** | Technical quality and feasibility | Real LOLA terrain, ephemeris checked against JPL Horizons on every deploy, every number cited, a self-check guide, no server to maintain |
+| **Relevance** | Fit with the challenge and NASA's mission | Every item in the brief: curated and custom sites, side-by-side comparison, dates and seasons, time to sunset and Earthset, Sun and Earth vs the horizon, 2D and 3D views, timeline animation, beginner and expert levels. Built around Artemis south-pole regions |
+| **Presentation** | Clarity and visual delivery | Colour always means the same thing (pink = Sun and power, light blue = Earth and radio, indigo = terrain), plain-language Educational level, works on phones |
+
+## 🤖 Use of artificial intelligence
+
+Space Apps allows AI tools if their use is disclosed. Here is ours:
+
+- **Code and documentation.** This placeholder version was built with AI coding assistants: first **OpenCode**, then **Claude** (Anthropic). The team set the goals, design direction and constraints, supplied the data report and the SELENE prototype, and reviewed the results. The AI wrote most of the code, the lesson text and this README.
+- **Graphics.** Every image in `graphics/readme/` and the lesson and badge placeholders in `graphics/` were generated by AI-written code and carry a visible **"AI-generated"** or **"AI-assisted placeholder"** watermark. They will be replaced by the team's own artwork. No AI-generated content uses or alters NASA logos, flags or mission insignia.
+- **Data.** No numbers are AI-generated. Every position, horizon and percentage is computed from the NASA data listed above, and the engine is checked against JPL Horizons.
+
+<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
+
+## 💻 Run it yourself
+
+No install, no build, no dependencies.
 
 ```bash
-python3 -m http.server 8000      # or: npx serve .
+git clone https://github.com/starvulkan/Aphelion-Lunar-Landing-Navigator.git
+cd Aphelion-Lunar-Landing-Navigator
+python3 -m http.server 8000        # or: npx serve .
 # open http://localhost:8000
 ```
 
-Opening `index.html` directly from disk will not work (browsers block the data files over `file://`).
+> [!TIP]
+> Opening `index.html` straight from disk won't work: browsers block the data files over `file://`. Use any small local server, like the one above.
 
-### Optional: generate the custom-site terrain tiles
+<details>
+<summary><b>Optional: real terrain for custom coordinates</b></summary>
 
-Curated sites work out of the box. To get real terrain for **custom coordinates** locally (the deploy workflow does this automatically), run once with internet access:
-
-```bash
-node tools/build-data.mjs           # downloads ~185 MB of LOLA data into .cache/, writes data/dem/
-```
-
-Without the tiles, custom sites fall back to a smooth-sphere horizon and the app says so.
-
-### Check the ephemeris
+The 36 curated sites work out of the box. To get real terrain for **any** coordinates locally (the deploy does this automatically), run once with internet access:
 
 ```bash
-node tools/validate.mjs             # against the stored Horizons table
-node tools/validate.mjs --live      # against fresh Horizons values
+node tools/build-data.mjs     # downloads ~185 MB of LOLA data into .cache/, writes data/dem/
 ```
 
-## Deploy (GitHub Pages)
+Without these tiles, custom sites fall back to a smooth-sphere horizon and the app says so.
+</details>
 
-1. Repository **Settings → Pages → Source: GitHub Actions**.
-2. Push to `main`. `.github/workflows/deploy.yml` downloads the LOLA data, rebuilds `data/`, validates the engine against JPL Horizons (deploy fails if off by more than 0.1°), and publishes.
-3. The workflow also runs daily to refresh the Horizons reference.
+<details>
+<summary><b>Check the engine yourself</b></summary>
 
-## Project layout
+```bash
+node tools/validate.mjs           # against the stored JPL Horizons table
+node tools/validate.mjs --live    # against fresh Horizons values (needs internet)
+node tools/validate-season.mjs    # season analysis vs the team report
+```
+</details>
+
+<details>
+<summary><b>Deploy to GitHub Pages</b></summary>
+
+1. **Settings → Pages → Source: GitHub Actions.**
+2. Push to `main`. The workflow in `.github/workflows/deploy.yml` downloads the LOLA data, rebuilds `data/`, checks the engine against JPL Horizons (the deploy fails if it is off by more than 0.1°), stamps file versions so browsers never mix old and new files, and publishes.
+3. It also runs daily to refresh the Horizons reference.
+
+If you edit CSS or JS by hand and deploy some other way, run `node tools/stamp-version.mjs` first.
+</details>
+
+## 🗂️ Project layout
 
 ```
-index.html            app shell
-css/styles.css        design (palette: #4350ce #e888a0 #bfedf8 #c9c7db #000000)
-js/app.js             Mission mode, dialogs, URL state, comparison
-js/ephemeris.js       Sun/Earth engine, visibility windows, Horizons query builder
-js/terrain.js         loads LOLA horizons and tiles
-js/viz.js             panorama, timeline, sky dome, season and lesson charts
-js/scene3d.js         3D terrain and Moon globe (three.js)
-js/season.js          season index (SAOQ) and year-long pattern analysis
-js/learn.js           Learn mode (lessons, labs, quizzes, missions, XP)
-js/lessons.js         lesson text, quizzes, missions, ranks, badges
-js/sites.js           curated sites with sources
-js/store.js           localStorage wrapper
-tools/lola-horizon.js horizon ray-marcher (shared by app and build)
-tools/build-data.mjs  rebuilds data/ from NASA sources
-tools/validate.mjs    compares the engine with JPL Horizons
-tools/validate-season.mjs  compares the season analysis with the team report
-vendor/three/         three.js (MIT)
-data/                 horizons.json, patches.i16, dem/, horizons-reference.json, stars.json
-graphics/             logo, icon, and watermarked placeholders
+index.html               app shell (Mission + Learn)
+css/styles.css           design system · palette #4350ce #e888a0 #bfedf8 #c9c7db #000000
+js/
+  app.js                 Mission mode, Professional/Educational levels, calendar, comparison, URL state
+  ephemeris.js           Sun and Earth engine, visibility timeline, Earth orientation, Horizons links
+  terrain.js             loads LOLA horizons, patches and tiles
+  score.js               overall 0–100 score
+  season.js              SAOQ season index and year-long patterns
+  scene3d.js             3D terrain, Moon globe, Earth and Sun (three.js)
+  viz.js                 panorama, timeline, sky dome, charts
+  learn.js · lessons.js  Learn mode: lessons, labs, quizzes, missions, XP, badges
+  sites.js               36 curated sites, each with a source
+  store.js               saves progress in the browser
+tools/
+  build-data.mjs         rebuilds data/ from NASA sources
+  lola-horizon.js        horizon ray-marcher (shared by app and build)
+  validate.mjs           engine vs JPL Horizons
+  validate-season.mjs    season analysis vs the team report
+  horizons-fetch.mjs     refreshes the Horizons reference table
+  make-web-moon.py       web-sized copies of NASA's Moon model
+  stamp-version.mjs      cache-busting version stamps
+data/                    horizons, terrain patches, tiles, Horizons reference, stars
+graphics/                logo, icon, models, textures, placeholders (see graphics/README.md)
+vendor/three/            three.js r170
 ```
 
-## Disclaimer
+## 🔭 What's next
 
-A planning aid and teaching tool, not flight software. Use official mission products for operational decisions.
+- [ ] Replace every placeholder graphic with the team's own artwork
+- [ ] Record the 30-second demo video (or 7-slide deck) for the submission
+- [ ] Higher-resolution terrain (LOLA 20 m polar products) around the Artemis regions
+- [ ] Partial Sun and Earth discs (how much of the disc is above the ridge, not just its centre)
+- [ ] Relay-satellite visibility for when Earth is below the horizon
+- [ ] Spanish version of Learn mode for classrooms in Honduras
 
-## License
+## 👩‍🚀 Team
 
-Apache 2.0 — see [LICENSE](LICENSE).
+**Team Aphelion** · NASA Space Apps Challenge 2026 · Tegucigalpa, Honduras
+
+| Name | Role |
+|---|---|
+| _Team member_ | _Role_ |
+| _Team member_ | _Role_ |
+| _Team member_ | _Role_ |
+
+<sub>Placeholder: the team fills this in.</sub>
+
+## 📜 Credits and licence
+
+Code: **Apache License 2.0** (see [LICENSE](LICENSE)). Third-party data and libraries keep their own terms, listed in [DATA_SOURCES.md](DATA_SOURCES.md).
+
+The Moon model is credited to **NASA's Goddard Space Flight Center** (SVS 14959). The Earth image is **NASA Blue Marble: Next Generation**, by Reto Stöckli, NASA Earth Observatory. Terrain is from the **LRO LOLA** team via the PDS Geosciences Node. Sun and Earth reference positions come from **NASA/JPL Horizons**. This project is not endorsed by NASA and uses no NASA logos or insignia.
+
+<br>
+
+<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
+<p align="center"><sub>Made in Tegucigalpa, under the same Sun that skims the lunar south pole.</sub></p>
