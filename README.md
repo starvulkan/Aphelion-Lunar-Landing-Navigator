@@ -14,8 +14,9 @@
   <img alt="Licence" src="https://img.shields.io/badge/licence-Apache_2.0-c9c7db?style=flat-square&labelColor=000000">
 </p>
 
-<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
+
 <br>
+<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
 <h3 align="center"><em>At the Moon's south pole the Sun never climbs more than a couple of degrees.<br>One ridge gets light for months. The crater beside it has been dark for billions of years.<br>Aphelion shows you which is which, for any place and any day.</em></h3>
 
@@ -258,4 +259,4 @@ The Moon model is credited to **NASA's Goddard Space Flight Center** (SVS 14959)
 <br>
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
-<p align="center"><sub>Made in Tegucigalpa, under the same Sun that skims the lunar south pole.</sub></p>
+<p align="center"><sub>Made with love in Honduras!</sub></p>
