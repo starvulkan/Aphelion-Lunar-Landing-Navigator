@@ -30,7 +30,7 @@
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
-## 🧭 Contents
+##  Contents
 
 | | | |
 |---|---|---|
@@ -42,7 +42,7 @@
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
-## 🌗 The challenge
+##  The challenge
 
 Missions to the lunar south pole live or die by two things: **sunlight** for power and a **line of sight to Earth** for radio. Near the pole the Sun and Earth both sit almost on the horizon, so a ridge a few kilometres away can decide whether a lander is lit, cold, or cut off. Tools that can answer this already exist, but they are built for specialists and slow to use.
 
@@ -54,7 +54,7 @@ The challenge asked for an intuitive web app that lets **mission planners, educa
 
 <p align="center"><sub>Three places a few kilometres apart, the same month, very different missions. Real LOLA terrain, computed by Aphelion.</sub></p>
 
-## 🚀 What we built (high-level summary)
+##  What we built (high-level summary)
 
 **Aphelion** is a free web app that runs entirely in the browser. Pick a landing site (or type any coordinates), pick a date and a surface stay, and it shows:
 
@@ -76,7 +76,7 @@ It has two modes for two audiences:
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
-## 📸 A quick tour
+##  A quick tour
 
 <table>
   <tr>
@@ -99,7 +99,7 @@ It has two modes for two audiences:
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
-## ⚙️ How it works
+##  How it works
 
 Everything runs **in the browser**. There is no server and no build step; GitHub Pages serves static files.
 
@@ -133,7 +133,7 @@ flowchart LR
 3. **Is it visible?** The Sun or Earth counts as visible when the centre of its disc is above that terrain horizon. Doing this every few minutes over the stay gives the timeline, the percentages, the next rise or set, and the longest dark spell.
 4. **What's the season?** The south pole has a mild but real season. The app uses our team report's *SAOQ* index (how far south the sub-solar point is) and shows a whole year for the site, the best landing day, and how strongly the site follows the season.
 
-## 🎯 The overall score
+##  The overall score
 
 One number to compare options, extending the balance score of the team's earlier SELENE prototype (which used √(sunlight × Earth)):
 
@@ -152,7 +152,7 @@ It is a geometric mean, so a site with **no** sunlight or **no** Earth contact s
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
-## 🛰️ NASA data
+##  NASA data
 
 | What | NASA source | How Aphelion uses it |
 |---|---|---|
@@ -165,7 +165,7 @@ It is a geometric mean, so a site with **no** sunlight or **no** Earth contact s
 
 Full citations, versions and processing for every item: **[DATA_SOURCES.md](DATA_SOURCES.md)**.
 
-## 🤝 Space agency partner and other data
+##  Space agency partner and other data
 
 | Resource | Use | Licence or terms |
 |---|---|---|
@@ -179,7 +179,7 @@ Full citations, versions and processing for every item: **[DATA_SOURCES.md](DATA
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
-## ✅ Is it right? (validity)
+##  Is it right? (validity)
 
 We wanted no guesswork, so every claim can be checked **outside the app**:
 
@@ -194,7 +194,7 @@ Do it yourself, step by step, with JPL Horizons, LROC QuickMap and Moon Trek: **
 
 **Known limits, stated in the app too:** terrain is 240 m per pixel near the pole, so boulders and small craters next to a lander are not resolved; visibility uses the centre of the Sun's and Earth's discs; the overall score is a screening aid.
 
-## 🏆 How it meets the judging criteria
+##  How it meets the judging criteria
 
 NASA Space Apps judges projects on five criteria. This is where to look for each:
 
@@ -206,7 +206,7 @@ NASA Space Apps judges projects on five criteria. This is where to look for each
 | **Relevance** | Fit with the challenge and NASA's mission | Every item in the brief: curated and custom sites, side-by-side comparison, dates and seasons, time to sunset and Earthset, Sun and Earth vs the horizon, 2D and 3D views, timeline animation, beginner and expert levels. Built around Artemis south-pole regions |
 | **Presentation** | Clarity and visual delivery | Clean space-grade design with intuitive color coding, beginner and expert modes, and seamless performance on phones and desktop.|
 
-## 🤖 Use of Super Intelligence tools
+##  Use of Super Intelligence tools
 
 Space Apps allows SI tools if their use is disclosed. Here is ours:
 
@@ -216,7 +216,7 @@ Space Apps allows SI tools if their use is disclosed. Here is ours:
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
-## 💻 Run and try it yourself
+##  Run and try it yourself
 
 ```bash
 git clone https://github.com/starvulkan/Aphelion-Lunar-Landing-Navigator.git
@@ -228,7 +228,7 @@ python3 -m http.server 8000        # or: npx serve .
 **Use the web app version at:**
 https://starvulkan.github.io/Aphelion-Lunar-Landing-Navigator/
 
-## 🗂️ Project layout
+##  Project layout
 
 ```
 index.html               app shell (Mission + Learn)
@@ -257,19 +257,20 @@ graphics/                logo, icon, models, textures, placeholders (see graphic
 vendor/three/            three.js r170
 ```
 
-## 👩‍🚀 Team
+##  Team
 
 **Team Aphelion** · NASA Space Apps Challenge 2026 · Tegucigalpa, Honduras
 
 | Name | Role |
 |---|---|
-| _Team member_ | _Role_ |
-| _Team member_ | _Role_ |
-| _Team member_ | _Role_ |
+| _Alirio Henriquez_ | _Investigator_ |
+| _Andrea Zedan_ | _Investigator and Revision_ |
+| _Edward Martinez_ | _Coder_ |
+| _Romina Camas_ | _Graphic Designer_ |
 
 <sub>Placeholder: the team fills this in.</sub>
 
-## 📜 Credits and licence
+##  Credits and licence
 
 Code: **Apache License 2.0** (see [LICENSE](LICENSE)). Third-party data and libraries keep their own terms, listed in [DATA_SOURCES.md](DATA_SOURCES.md).
 
