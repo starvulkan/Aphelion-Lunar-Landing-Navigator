@@ -270,8 +270,6 @@ vendor/three/            three.js r170
 | _Edward Martinez_ | _Coder_ |
 | _Romina Camas_ | _Graphic Designer_ |
 
-<sub>Placeholder: the team fills this in.</sub>
-
 ##  Credits and licence
 
 Code: **Apache License 2.0** (see [LICENSE](LICENSE)). Third-party data and libraries keep their own terms, listed in [DATA_SOURCES.md](DATA_SOURCES.md).
