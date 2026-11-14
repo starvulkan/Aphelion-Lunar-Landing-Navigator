@@ -204,7 +204,7 @@ NASA Space Apps judges projects on five criteria. This is where to look for each
 | **Creativity** | Originality | One engine, two audiences: a flight-console view and a game-like landing report of the *same* scenario; the season index from our own report built into a live year chart; Moon, Earth and Sun in true directions |
 | **Validity** | Technical quality and feasibility | Real LOLA terrain, ephemeris checked against JPL Horizons on every deploy, every number cited, a self-check guide, no server to maintain |
 | **Relevance** | Fit with the challenge and NASA's mission | Every item in the brief: curated and custom sites, side-by-side comparison, dates and seasons, time to sunset and Earthset, Sun and Earth vs the horizon, 2D and 3D views, timeline animation, beginner and expert levels. Built around Artemis south-pole regions |
-| **Presentation** | Clarity and visual delivery | Colour always means the same thing (pink = Sun and power, light blue = Earth and radio, indigo = terrain), plain-language Educational level, works on phones |
+| **Presentation** | Clarity and visual delivery | Clean space-grade design with intuitive color coding, beginner and expert modes, and seamless performance on phones and desktop.|
 
 ## 🤖 Use of artificial intelligence
 
