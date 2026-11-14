@@ -19,9 +19,6 @@
   <img alt="Licence" src="https://img.shields.io/badge/licence-Apache_2.0-c9c7db?style=flat-square&labelColor=000000">
 </p>
 
-> [!NOTE]
-> **This is a placeholder demo.** It exists so the team can see a complete, working version of the idea and take inspiration from it while building our own. Graphics marked "AI-generated" or "AI-assisted placeholder" will be replaced by the team's final artwork. See [Use of AI](#-use-of-artificial-intelligence).
-
 <br>
 
 <h3 align="center"><em>At the Moon's south pole the Sun never climbs more than a couple of degrees.<br>One ridge gets light for months. The crater beside it has been dark for billions of years.<br>Aphelion shows you which is which, for any place and any day.</em></h3>
@@ -38,7 +35,7 @@
 | [How it works](#-how-it-works) | [The overall score](#-the-overall-score) | [NASA data](#-nasa-data) |
 | [Other data and tools](#-space-agency-partner-and-other-data) | [Is it right?](#-is-it-right-validity) | [Judging criteria](#-how-it-meets-the-judging-criteria) |
 | [Use of AI](#-use-of-artificial-intelligence) | [Run it](#-run-it-yourself) | [Project layout](#-project-layout) |
-| [What's next](#-whats-next) | [Team](#-team) | [Credits and licence](#-credits-and-licence) |
+| [Team](#-team) | [Credits and licence](#-credits-and-licence) |
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
