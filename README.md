@@ -74,6 +74,8 @@ It has two modes for two audiences:
 
 **Why it matters:** the same few kilometres can mean months of light or permanent darkness. Making that visible in seconds helps planners screen options, and helps everyone else understand why the Moon's south pole is so hard, and so worth it.
 
+**Fun Fact!** The UI for Learn Mode and Educational Mode in Mission Mode takes inspiration from UI elements and animations from Lando Norris's official website! https://landonorris.com/
+
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
 ##  A quick tour
@@ -275,6 +277,8 @@ vendor/three/            three.js r170
 Code: **Apache License 2.0** (see [LICENSE](LICENSE)). Third-party data and libraries keep their own terms, listed in [DATA_SOURCES.md](DATA_SOURCES.md).
 
 The Moon model is credited to **NASA's Goddard Space Flight Center** (SVS 14959). The Earth image is **NASA Blue Marble: Next Generation**, by Reto Stöckli, NASA Earth Observatory. Terrain is from the **LRO LOLA** team via the PDS Geosciences Node. Sun and Earth reference positions come from **NASA/JPL Horizons**. This project is not endorsed by NASA and uses no NASA logos or insignia.
+
+**About the SELENE research prototype:** SELENE was a demo app made for research and practice purposes, as to get familiar with what we would be doing and programming during the event. As to comply with competition rules, NO parts of the codebase for Aphelion LLN use direct code from SELENE, as it was created before the event. SELENE was created for research and feature testing purposes only.
 
 <br>
 
