@@ -16,7 +16,6 @@
 <p align="center">
   <img alt="NASA Space Apps 2026" src="https://img.shields.io/badge/NASA_Space_Apps-2026_·_The_Next_Frontier-c9c7db?style=flat-square&labelColor=000000">
   <img alt="Local event" src="https://img.shields.io/badge/local_event-Tegucigalpa,_Honduras-c9c7db?style=flat-square&labelColor=000000">
-  <img alt="No build step" src="https://img.shields.io/badge/build_step-none-c9c7db?style=flat-square&labelColor=000000">
   <img alt="Licence" src="https://img.shields.io/badge/licence-Apache_2.0-c9c7db?style=flat-square&labelColor=000000">
 </p>
 
