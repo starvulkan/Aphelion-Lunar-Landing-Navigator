@@ -47,6 +47,7 @@ const pct = f => `${Math.round(f * 100)} %`;
 const fmtHours = h => h >= 48 ? `${(h / 24).toFixed(1)} d` : `${Math.round(h)} h`;
 const fmtLat = v => `${Math.abs(v).toFixed(v === Math.round(v) ? 0 : 3)}°${v < 0 ? 'S' : 'N'}`;
 const fmtLon = v => { const w = ((v + 540) % 360) - 180; return `${Math.abs(w).toFixed(w === Math.round(w) ? 0 : 3)}°${w < 0 ? 'W' : 'E'}`; };
+const mobileShort = () => matchMedia('(max-width: 480px)').matches;
 const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const toLocalInput = d => d.toISOString().slice(0, 16);
 
@@ -706,36 +707,70 @@ class App {
   }
 
   /* --------------------------------------------------------------- sweep */
+  /** Month calendar of landing days. Each day is a landing at the current time of day, scored over the stay. */
   renderSweep() {
     const token = ++this._sweepToken;
-    const grid = $('#sweep-grid');
-    const s = this.site, days = this.state.days;
-    const N = 45;
+    const host = $('#sweep-grid');
+    const s = this.site, days = this.state.days, metric = this.state.sweepMetric;
     const step = days <= 3 ? 30 : 60;
-    const metric = this.state.sweepMetric;
     const color = { sun: [232, 136, 160], earth: [191, 237, 248], both: [67, 80, 206] }[metric];
-    grid.innerHTML = '';
-    const cells = [];
-    for (let k = 0; k < N; k++) {
-      const t = new Date(this.state.epoch.getTime() + k * DAY);
-      const b = el('button', { class: 'sweep-cell', 'aria-current': k === 0 ? 'true' : 'false', title: fmtShort(t), onclick: () => { this.state.epoch = t; this.state.followNow = false; this.refresh(); } }, el('span', { class: 'd', text: t.getUTCDate() }));
-      grid.append(b); cells.push([b, t]);
+    $('#cal-ramp').style.background = `linear-gradient(90deg, rgba(${color},0.08), rgb(${color}))`;
+    const ep = this.state.epoch, tod = ep.getTime() - Date.UTC(ep.getUTCFullYear(), ep.getUTCMonth(), ep.getUTCDate());
+    const landKey = Date.UTC(ep.getUTCFullYear(), ep.getUTCMonth(), ep.getUTCDate());
+    const now = new Date(), todayKey = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate());
+    // Months shown: the landing month and the next, unless the user has paged elsewhere.
+    const epMonth = ep.getUTCFullYear() * 12 + ep.getUTCMonth();
+    if (this._calFor !== landKey) { this._calFor = landKey; const f = this.state.calMonth; if (f == null || epMonth < f || epMonth > f + 1) this.state.calMonth = epMonth; }
+    const first = this.state.calMonth ?? epMonth;
+    if (!this._calBound) {
+      this._calBound = true;
+      $('#cal-prev').addEventListener('click', () => { this.state.calMonth = (this.state.calMonth ?? epMonth) - 1; this.renderSweep(); });
+      $('#cal-next').addEventListener('click', () => { this.state.calMonth = (this.state.calMonth ?? epMonth) + 1; this.renderSweep(); });
+      $('#cal-home').addEventListener('click', () => { const e = this.state.epoch; this.state.calMonth = e.getUTCFullYear() * 12 + e.getUTCMonth(); this.renderSweep(); });
     }
+    const cacheKey = `${s.id}|${s.lat}|${s.lon}|${s.horizon.kind}|${days}|${tod}|${this.terrain.demsReady}`;
+    if (this._calCacheKey !== cacheKey) { this._calCacheKey = cacheKey; this._calCache = new Map(); }
+    const cache = this._calCache;
+    const wd = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    host.innerHTML = '';
+    const cells = [];
+    for (let m = first; m < first + 2; m++) {
+      const y = Math.floor(m / 12), mo = m % 12;
+      const start = Date.UTC(y, mo, 1), n = new Date(Date.UTC(y, mo + 1, 0)).getUTCDate(), lead = new Date(start).getUTCDay();
+      const title = new Date(start).toLocaleString('en', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+      const grid = el('div', { class: 'cal-grid', role: 'grid', 'aria-label': title });
+      wd.forEach(w => grid.append(el('span', { class: 'cal-wd', role: 'columnheader', 'aria-label': w, text: w.slice(0, mobileShort() ? 1 : 3) })));
+      for (let k = 0; k < lead; k++) grid.append(el('span', { class: 'cal-pad', 'aria-hidden': 'true' }));
+      for (let d = 1; d <= n; d++) {
+        const dayKey = Date.UTC(y, mo, d), t = new Date(dayKey + tod);
+        const label = new Date(dayKey).toLocaleString('en', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+        const b = el('button', { class: 'sweep-cell', role: 'gridcell', 'aria-current': dayKey === landKey ? 'date' : null, 'data-today': dayKey === todayKey ? '' : null, title: label,
+          onclick: () => { this.state.epoch = t; this.state.followNow = false; this.refresh(); } }, el('span', { class: 'd', text: String(d) }));
+        grid.append(b); cells.push([b, t, dayKey, label]);
+      }
+      host.append(el('section', { class: 'cal-month' }, el('h3', { class: 'cal-title', text: title }), grid));
+    }
+    const paint = (b, f, label) => {
+      b.style.background = `rgba(${color.join(',')},${(0.08 + 0.92 * f).toFixed(3)})`;
+      b.style.color = f > 0.55 ? 'rgba(0,0,0,0.8)' : 'rgba(201,199,219,0.85)';
+      b.title = `${label}: ${Math.round(f * 100)} % ${metric === 'sun' ? 'sunlight' : metric === 'earth' ? 'Earth in view' : 'both'}`;
+      b.setAttribute('aria-label', b.title);
+    };
     let k = 0;
     const work = () => {
       if (token !== this._sweepToken) return;
       const until = performance.now() + 12;
-      while (k < N && performance.now() < until) {
-        const [b, t] = cells[k];
-        const tl = k === 0 && step === this.result.timeline.stepMin ? this.result.timeline : this.eph.timeline(s, t, days, s.horizon, step);
-        const f = metric === 'sun' ? tl.sunFraction : metric === 'earth' ? tl.earthFraction : tl.bothFraction;
-        b.style.background = `rgba(${color.join(',')},${(0.08 + 0.92 * f).toFixed(3)})`;
-        b.style.color = f > 0.55 ? 'rgba(0,0,0,0.75)' : 'rgba(201,199,219,0.8)';
-        b.title = `${fmtShort(t)} UTC: ${Math.round(f * 100)} % ${metric === 'sun' ? 'sunlight' : metric === 'earth' ? 'Earth in view' : 'both'}`;
-        b.setAttribute('aria-label', b.title);
-        k++;
+      while (k < cells.length && performance.now() < until) {
+        const [b, t, dayKey, label] = cells[k++];
+        let r = cache.get(dayKey);
+        if (!r) {
+          const tl = dayKey === landKey && step === this.result.timeline.stepMin ? this.result.timeline : this.eph.timeline(s, t, days, s.horizon, step);
+          r = { sun: tl.sunFraction, earth: tl.earthFraction, both: tl.bothFraction };
+          cache.set(dayKey, r);
+        }
+        paint(b, r[metric], label);
       }
-      if (k < N) setTimeout(work, 0);
+      if (k < cells.length) setTimeout(work, 0);
     };
     setTimeout(work, 30);
   }

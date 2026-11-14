@@ -185,16 +185,22 @@
 
       <div class="panel sweep">
         <div class="sweep-head">
-          <h2 class="panel-h"><span class="pro-only">Landing date sweep</span><span class="edu-only">Pick your landing day</span></h2>
-          <p class="sweep-sub"><span class="pro-only">Same time of day, next 45 days, scored over the chosen stay.</span><span class="edu-only">Each square is a day you could land. The brighter it is, the better that day is for the thing you choose below.</span></p>
+          <h2 class="panel-h"><span class="pro-only">Landing calendar</span><span class="edu-only">Pick your landing day</span></h2>
+          <p class="sweep-sub"><span class="pro-only">Each day is a landing at the same time of day, scored over the chosen stay. Dates in UTC.</span><span class="edu-only">Each day on the calendar is a day you could land. The brighter it is, the better that day is for the thing you choose below.</span></p>
         </div>
         <div class="sweep-legend">
           <label><input type="radio" name="sweep-metric" value="sun" checked> Sunlight</label>
           <label><input type="radio" name="sweep-metric" value="earth"> Earth in view</label>
           <label><input type="radio" name="sweep-metric" value="both"> Both</label>
         </div>
-        <div class="sweep-grid" id="sweep-grid" role="grid" aria-label="Landing date sweep"></div>
-        <p class="sweep-hint" id="sweep-hint">Select a square to move the landing to that date.</p>
+        <div class="cal-nav">
+          <button class="cal-arrow" id="cal-prev" aria-label="Previous month">‹</button>
+          <button class="cal-today" id="cal-home">Landing month</button>
+          <button class="cal-arrow" id="cal-next" aria-label="Next month">›</button>
+          <span class="cal-scale" aria-hidden="true"><span>0 %</span><i id="cal-ramp"></i><span>100 %</span></span>
+        </div>
+        <div class="cal" id="sweep-grid"></div>
+        <p class="sweep-hint" id="sweep-hint">Select a day to move the landing to that date. The outlined day is the current landing; the dot marks today.</p>
       </div>
     </section>
 
