@@ -390,29 +390,44 @@ export class Scene3D {
    */
   /** Fetch with progress so the UI can show how much of the 14 MB model has arrived. */
   async _fetchBuffer(url, onProgress) {
-    // Keep the model in the browser's Cache Storage so later visits skip the download entirely.
-    // Bump MODEL_CACHE when the model file changes.
+    // Keep the model in the browser's Cache Storage so later visits skip the download.
+    // Every copy is checked before it is used or stored, so a broken download can never stick.
     let cache = null;
-    try { cache = await caches.open(MODEL_CACHE); const hit = await cache.match(url); if (hit) { onProgress?.(1); return hit.arrayBuffer(); } } catch { cache = null; }
+    try {
+      cache = await caches.open(MODEL_CACHE);
+      caches.keys().then(ks => ks.filter(k => k.startsWith('aphelion-models') && k !== MODEL_CACHE).forEach(k => caches.delete(k))).catch(() => {});
+      const hit = await cache.match(url);
+      if (hit) {
+        const buf = await hit.arrayBuffer();
+        if (glbComplete(buf)) { onProgress?.(1); return buf; }
+        await cache.delete(url);
+      }
+    } catch { cache = null; }
     const buf = await this._download(url, onProgress);
+    if (!glbComplete(buf)) throw new Error(`incomplete download of ${url} (${buf.byteLength} bytes)`);
     try { await cache?.put(url, new Response(buf.slice(0), { headers: { 'content-type': 'model/gltf-binary' } })); } catch { /* storage full or blocked: fine */ }
     return buf;
   }
 
+  /** Download in chunks so progress can be shown. Content-Length is the compressed size when the
+   *  server gzips the file, so it is only used for the progress estimate, never to size the buffer. */
   async _download(url, onProgress) {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
-    const total = Number(res.headers.get('content-length')) || 0;
-    if (!res.body || !total || !onProgress) return res.arrayBuffer();
-    const out = new Uint8Array(total), reader = res.body.getReader();
+    if (!res.body || !onProgress) return res.arrayBuffer();
+    const expect = Number(res.headers.get('x-glb-bytes')) || this._expectedBytes || Number(res.headers.get('content-length')) || 0;
+    const reader = res.body.getReader(), parts = [];
     let got = 0;
     for (;;) {
       const { done, value } = await reader.read();
       if (done) break;
-      if (got + value.length > out.length) return (await new Response(new Blob([out.subarray(0, got), value])).arrayBuffer()); // compressed transfer: size unknown
-      out.set(value, got); got += value.length; onProgress(got / total);
+      parts.push(value); got += value.length;
+      if (expect) onProgress(Math.min(0.99, got / expect));
     }
-    return out.buffer.slice(0, got);
+    const out = new Uint8Array(got);
+    let o = 0; for (const p of parts) { out.set(p, o); o += p.length; }
+    onProgress(1);
+    return out.buffer;
   }
 
   /** Decode the embedded texture. Tries createImageBitmap, then an <img>; shrinks it if the GPU cannot hold it. */
@@ -434,10 +449,12 @@ export class Scene3D {
     return src;
   }
 
-  async loadMoonModel(url, onProgress) {
+  async loadMoonModel(url, onProgress, expectedBytes) {
+    if (onProgress) this._progress = onProgress;
     if (this._modelPromise) return this._modelPromise;
+    this._expectedBytes = expectedBytes;
     this._modelPromise = (async () => {
-      const buf = await this._fetchBuffer(url, onProgress);
+      const buf = await this._fetchBuffer(url, f => this._progress?.(f));
       const dv = new DataView(buf);
       if (dv.getUint32(0, true) !== 0x46546c67) throw new Error('not a GLB file');
       const jl = dv.getUint32(12, true);
@@ -465,9 +482,9 @@ export class Scene3D {
       mesh.rotation.y = -Math.PI / 2;
       this.gscene.add(mesh);
       this.moon.visible = false;
-      this.moonModel = mesh;
+      this.moonModel = mesh; this.modelError = null;
       return true;
-    })().catch(err => { console.warn('[3D] NASA Moon model unavailable, using LOLA relief sphere', err); this.modelError = String(err?.message || err); return false; });
+    })().catch(err => { console.warn('[3D] NASA Moon model unavailable, using LOLA relief sphere', err); this.modelError = String(err?.message || err); this._modelPromise = null; return false; });
     return this._modelPromise;
   }
 
@@ -524,7 +541,14 @@ export class Scene3D {
   }
 }
 
-const MODEL_CACHE = 'aphelion-models-v1';
+const MODEL_CACHE = 'aphelion-models-v2';
+
+/** True when the buffer is a whole GLB file: right magic number and the length its header declares. */
+function glbComplete(buf) {
+  if (!buf || buf.byteLength < 20) return false;
+  const dv = new DataView(buf);
+  return dv.getUint32(0, true) === 0x46546c67 && dv.getUint32(8, true) === buf.byteLength;
+}
 
 export function webglAvailable() {
   try { const c = document.createElement('canvas'); return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl'))); } catch { return false; }

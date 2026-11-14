@@ -12,8 +12,12 @@ import { Learn } from './learn.js';
 
 const DAY = 86400000;
 const OBSERVER_M = 2;
-// NASA SVS 14959 moon_small.glb with its texture re-encoded as JPEG (14 MB → 4 MB). See DATA_SOURCES.md.
-const MOON_MODEL = 'graphics/models/moon_web.glb';
+// NASA SVS 14959 moon_small.glb with its texture re-encoded as JPEG (see DATA_SOURCES.md):
+// 4096 px texture for desktops, 2048 px for phones and tablets, which have less memory for textures.
+const SMALL_SCREEN = matchMedia('(pointer: coarse), (max-width: 820px)').matches || (navigator.deviceMemory || 8) <= 4;
+const MOON_MODEL = SMALL_SCREEN
+  ? { url: 'graphics/models/moon_mobile.glb', bytes: 2183168 }
+  : { url: 'graphics/models/moon_web.glb', bytes: 3953912 };
 
 const $ = sel => document.querySelector(sel);
 const el = (tag, attrs = {}, ...kids) => {
@@ -453,7 +457,7 @@ class App {
     // Fetch the Moon model quietly once the page has settled, so the globe tab opens instantly.
     if (this.scene3d && !navigator.connection?.saveData) {
       const idle = window.requestIdleCallback || (f => setTimeout(f, 1500));
-      setTimeout(() => idle(() => this.scene3d.loadMoonModel(MOON_MODEL), { timeout: 4000 }), 3000);
+      setTimeout(() => idle(() => this.scene3d.loadMoonModel(MOON_MODEL.url, null, MOON_MODEL.bytes), { timeout: 4000 }), 3000);
     }
   }
 
@@ -472,9 +476,9 @@ class App {
       // Shade the stand-in sphere from LOLA straight away, so it is never a blank ball while the NASA model downloads.
       this.terrain.loadDems().then(d => { if (d) this.scene3d?.setGlobeRelief(this.terrain.dems.global); });
       if (!this.scene3d?.moonModel) $('#scene-tags').textContent = "Loading NASA's Moon model…";
-      this.scene3d?.loadMoonModel(MOON_MODEL, f => {
-        if (this.state.view === 'globe') $('#scene-tags').textContent = `Loading NASA's Moon model… ${Math.round(f * 100)} %`;
-      }).then(() => { if (this.state.view === 'globe') this.sceneTags(); });
+      this.scene3d?.loadMoonModel(MOON_MODEL.url, f => {
+        if (this.state.view === 'globe' && !this.scene3d?.moonModel) $('#scene-tags').textContent = `Loading NASA's Moon model… ${Math.round(f * 100)} %`;
+      }, MOON_MODEL.bytes).then(() => { if (this.state.view === 'globe') this.sceneTags(); });
     } else if (view === 'site3d') this.scene3d?.setMode('site');
     this._sceneSite = null;
     if (this.result) { this.syncScene(true); this.redraw(); }
