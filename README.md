@@ -137,7 +137,7 @@ flowchart LR
 
 ##  The overall score
 
-One number to compare options, extending the balance score of the team's earlier SELENE prototype (which used √(sunlight × Earth)):
+One number to compare options, extending the balance score of our earlier SELENE research prototype (which used √(sunlight × Earth)):
 
 $$
 \text{score} = 100 \times P^{\,w_P}\, C^{\,w_C}\, N^{\,w_N}\, T^{\,w_T}
