@@ -50,4 +50,4 @@ Referenced in `js/lessons.js` (`BADGES` and `CHALLENGES`). Shown greyed out unti
 
 ## 3D model
 
-`models/moon_small.glb` — NASA's Moon model for the Moon globe view (NASA SVS 14959, credit: NASA's Goddard Space Flight Center). Not a placeholder; keep as is.
+`models/moon_small.glb` — NASA's original Moon model (NASA SVS 14959, credit: NASA's Goddard Space Flight Center). `models/moon_web.glb` — the same model with a JPEG texture (4 MB), which is what the app loads. Not placeholders; keep both. If you change the model, bump `MODEL_CACHE` in `js/scene3d.js` so browsers drop the old cached copy.

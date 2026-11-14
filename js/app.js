@@ -12,6 +12,8 @@ import { Learn } from './learn.js';
 
 const DAY = 86400000;
 const OBSERVER_M = 2;
+// NASA SVS 14959 moon_small.glb with its texture re-encoded as JPEG (14 MB → 4 MB). See DATA_SOURCES.md.
+const MOON_MODEL = 'graphics/models/moon_web.glb';
 
 const $ = sel => document.querySelector(sel);
 const el = (tag, attrs = {}, ...kids) => {
@@ -448,6 +450,11 @@ class App {
       if (this.state.view !== 'pano') this.state.view = 'pano';
     }
     this.setView(this.state.view);
+    // Fetch the Moon model quietly once the page has settled, so the globe tab opens instantly.
+    if (this.scene3d && !navigator.connection?.saveData) {
+      const idle = window.requestIdleCallback || (f => setTimeout(f, 1500));
+      setTimeout(() => idle(() => this.scene3d.loadMoonModel(MOON_MODEL), { timeout: 4000 }), 3000);
+    }
   }
 
   setView(view) {
@@ -462,10 +469,12 @@ class App {
     this.scene3d?.setActive(view !== 'pano' && this.state.mode !== 'learn');
     if (view === 'globe') {
       this.scene3d?.setMode('globe');
-      this.scene3d?.loadMoonModel('graphics/models/moon_small.glb').then(ok => {
-        this.sceneTags();
-        if (!ok) this.terrain.loadDems().then(d => { if (d) this.scene3d?.setGlobeRelief(this.terrain.dems.global); });
-      });
+      // Shade the stand-in sphere from LOLA straight away, so it is never a blank ball while the NASA model downloads.
+      this.terrain.loadDems().then(d => { if (d) this.scene3d?.setGlobeRelief(this.terrain.dems.global); });
+      if (!this.scene3d?.moonModel) $('#scene-tags').textContent = "Loading NASA's Moon model…";
+      this.scene3d?.loadMoonModel(MOON_MODEL, f => {
+        if (this.state.view === 'globe') $('#scene-tags').textContent = `Loading NASA's Moon model… ${Math.round(f * 100)} %`;
+      }).then(() => { if (this.state.view === 'globe') this.sceneTags(); });
     } else if (view === 'site3d') this.scene3d?.setMode('site');
     this._sceneSite = null;
     if (this.result) { this.syncScene(true); this.redraw(); }
@@ -475,7 +484,7 @@ class App {
     const v = this.state.view, el3 = $('#scene-tags'), msg = $('#scene-msg');
     msg.hidden = true;
     if (v === 'pano') { el3.textContent = ''; return; }
-    if (v === 'globe') { el3.textContent = this.scene3d?.moonModel ? "Drag to turn the Moon. NASA's Moon model (LRO imagery), lit from the true direction of the Sun." : 'Drag to turn the Moon. Lit from the true direction of the Sun; relief from LOLA, exaggerated ×6.'; return; }
+    if (v === 'globe') { el3.textContent = this.scene3d?.moonModel ? "Drag to turn the Moon. NASA's Moon model (LRO imagery), lit from the true direction of the Sun." : (this.scene3d?.modelError ? "NASA's Moon model could not load, showing LOLA relief instead. " : '') + 'Drag to turn the Moon. Lit from the true direction of the Sun; relief from LOLA, exaggerated ×6.'; return; }
     const p = this._scenePatch;
     if (!p) { msg.hidden = false; msg.textContent = this.terrain.patches || this.terrain.demsReady ? 'No terrain for this point.' : 'Loading LOLA terrain…'; el3.textContent = ''; return; }
     el3.textContent = `84 km across, rings every 10 km. Relief ${$('#exag').value === '1' ? 'at true scale' : '×' + $('#exag').value}. ${p.source}. Drag to orbit, Ctrl + scroll to zoom.`;

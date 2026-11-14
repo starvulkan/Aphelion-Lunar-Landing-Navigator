@@ -388,10 +388,56 @@ export class Scene3D {
    * −Z, found by matching its albedo to LOLA elevation; our globe frame has
    * longitude 0 on +X, hence the −90° turn about Y.
    */
-  async loadMoonModel(url) {
+  /** Fetch with progress so the UI can show how much of the 14 MB model has arrived. */
+  async _fetchBuffer(url, onProgress) {
+    // Keep the model in the browser's Cache Storage so later visits skip the download entirely.
+    // Bump MODEL_CACHE when the model file changes.
+    let cache = null;
+    try { cache = await caches.open(MODEL_CACHE); const hit = await cache.match(url); if (hit) { onProgress?.(1); return hit.arrayBuffer(); } } catch { cache = null; }
+    const buf = await this._download(url, onProgress);
+    try { await cache?.put(url, new Response(buf.slice(0), { headers: { 'content-type': 'model/gltf-binary' } })); } catch { /* storage full or blocked: fine */ }
+    return buf;
+  }
+
+  async _download(url, onProgress) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+    const total = Number(res.headers.get('content-length')) || 0;
+    if (!res.body || !total || !onProgress) return res.arrayBuffer();
+    const out = new Uint8Array(total), reader = res.body.getReader();
+    let got = 0;
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (got + value.length > out.length) return (await new Response(new Blob([out.subarray(0, got), value])).arrayBuffer()); // compressed transfer: size unknown
+      out.set(value, got); got += value.length; onProgress(got / total);
+    }
+    return out.buffer.slice(0, got);
+  }
+
+  /** Decode the embedded texture. Tries createImageBitmap, then an <img>; shrinks it if the GPU cannot hold it. */
+  async _decodeTexture(blob) {
+    let src;
+    try { src = await createImageBitmap(blob); }
+    catch {
+      const u = URL.createObjectURL(blob);
+      try { src = await new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = () => no(new Error('texture decode failed')); im.src = u; }); }
+      finally { setTimeout(() => URL.revokeObjectURL(u), 1000); }
+    }
+    const max = Math.min(this.renderer.capabilities.maxTextureSize, 8192), w = src.width, h = src.height;
+    if (w > max || h > max) {
+      const k = max / Math.max(w, h), c = document.createElement('canvas');
+      c.width = Math.round(w * k); c.height = Math.round(h * k);
+      c.getContext('2d').drawImage(src, 0, 0, c.width, c.height);
+      src = c;
+    }
+    return src;
+  }
+
+  async loadMoonModel(url, onProgress) {
     if (this._modelPromise) return this._modelPromise;
     this._modelPromise = (async () => {
-      const buf = await (await fetch(url)).arrayBuffer();
+      const buf = await this._fetchBuffer(url, onProgress);
       const dv = new DataView(buf);
       if (dv.getUint32(0, true) !== 0x46546c67) throw new Error('not a GLB file');
       const jl = dv.getUint32(12, true);
@@ -411,9 +457,9 @@ export class Scene3D {
       g.computeBoundingSphere();
       const img = json.images[json.textures[json.materials[prim.material ?? 0].pbrMetallicRoughness.baseColorTexture.index].source];
       const iv = json.bufferViews[img.bufferView];
-      const bmp = await createImageBitmap(new Blob([buf.slice(bin + (iv.byteOffset || 0), bin + (iv.byteOffset || 0) + iv.byteLength)], { type: img.mimeType }), { imageOrientation: 'none' });
-      const tex = new THREE.Texture(bmp);
-      tex.flipY = false; tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy()); tex.needsUpdate = true;
+      const pic = await this._decodeTexture(new Blob([buf.slice(bin + (iv.byteOffset || 0), bin + (iv.byteOffset || 0) + iv.byteLength)], { type: img.mimeType || 'image/png' }));
+      const tex = new THREE.Texture(pic);
+      tex.flipY = false; tex.generateMipmaps = true; tex.minFilter = THREE.LinearMipmapLinearFilter; tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy()); tex.needsUpdate = true;
       const mesh = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ map: tex, roughness: 1, metalness: 0 }));
       mesh.scale.setScalar(10 / g.boundingSphere.radius);
       mesh.rotation.y = -Math.PI / 2;
@@ -421,7 +467,7 @@ export class Scene3D {
       this.moon.visible = false;
       this.moonModel = mesh;
       return true;
-    })().catch(err => { console.warn('[3D] NASA Moon model unavailable, using LOLA relief sphere', err); return false; });
+    })().catch(err => { console.warn('[3D] NASA Moon model unavailable, using LOLA relief sphere', err); this.modelError = String(err?.message || err); return false; });
     return this._modelPromise;
   }
 
@@ -477,6 +523,8 @@ export class Scene3D {
     }
   }
 }
+
+const MODEL_CACHE = 'aphelion-models-v1';
 
 export function webglAvailable() {
   try { const c = document.createElement('canvas'); return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl'))); } catch { return false; }
