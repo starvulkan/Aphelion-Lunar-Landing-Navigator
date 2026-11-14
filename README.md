@@ -14,6 +14,7 @@
   <img alt="Licence" src="https://img.shields.io/badge/licence-Apache_2.0-c9c7db?style=flat-square&labelColor=000000">
 </p>
 
+<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 <br>
 
 <h3 align="center"><em>At the Moon's south pole the Sun never climbs more than a couple of degrees.<br>One ridge gets light for months. The crater beside it has been dark for billions of years.<br>Aphelion shows you which is which, for any place and any day.</em></h3>
@@ -28,11 +29,7 @@ Missions to the lunar south pole live or die by two things: **sunlight** for pow
 
 The challenge asked for an intuitive web app that lets **mission planners, educators and the public** compare landing sites and dates quickly, seeing where the Sun and Earth are relative to the horizon, how long power and direct-to-Earth contact last, and how that changes over a lunar day or a season.
 
-<p align="center">
-  <img src="graphics/readme/one-month.svg" alt="One month at three south-pole sites a few kilometres apart. The connecting ridge has sunlight 100 % of the time and Earth 47 %. Malapert Massif has sunlight 100 % and Earth 63 %. Shackleton crater floor has neither." width="100%">
-</p>
-
-<p align="center"><sub>Three places a few kilometres apart, the same month, very different missions. Real LOLA terrain, computed by Aphelion.</sub></p>
+<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
 ##  What we built (high-level summary)
 
