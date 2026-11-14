@@ -1,0 +1,11 @@
+{
+ "generated": "2026-11-14T18:40:00Z",
+ "note": "Built in a browser from NASA PDS LOLA GDR files with tools/lola-horizon.js; tools/build-data.mjs regenerates identical tiles.",
+ "dnScale": 0.5,
+ "tiles": [
+  { "id": "south", "file": "south_84s_240m.i16", "kind": "polar", "pole": "S", "lines": 1396, "samples": 1396, "scale": 240, "lineOffset": 697.5, "sampleOffset": 697.5, "label": "LDEM_60S_240M crop to 84.5°S (240 m/px)" },
+  { "id": "south960", "file": "south_75s_960m.i16", "kind": "polar", "pole": "S", "lines": 958, "samples": 958, "scale": 960, "lineOffset": 478.5, "sampleOffset": 478.5, "label": "LDEM_60S_240M mean-binned to 960 m/px, to 75°S" },
+  { "id": "north", "file": "north_75n_960m.i16", "kind": "polar", "pole": "N", "lines": 953, "samples": 953, "scale": 960, "lineOffset": 476, "sampleOffset": 476, "label": "LDEM_75N_240M mean-binned to 960 m/px" },
+  { "id": "global", "file": "global_ldem4.i16", "kind": "cyl", "lines": 720, "samples": 1440, "res": 4, "lineOffset": 359.5, "sampleOffset": 719.5, "centerLon": 180, "label": "LDEM_4 global (7.6 km/px)" }
+ ]
+}

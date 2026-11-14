@@ -1,0 +1,6 @@
+# LOLA downloads (rebuilt by tools/build-data.mjs)
+.cache/
+_site/
+node_modules/
+__pycache__/
+.DS_Store

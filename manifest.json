@@ -1,0 +1,19 @@
+{
+  "name": "Aphelion — Lunar Landing Navigator",
+  "short_name": "Aphelion",
+  "description": "Compare lunar landing sites and dates against real LOLA terrain: sunlight, Earth visibility, and time to sunset or Earthset.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "lang": "en",
+  "categories": ["education", "science", "productivity"],
+  "icons": [
+    { "src": "graphics/icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ],
+  "shortcuts": [
+    { "name": "Mission mode", "url": "./#m=mission" },
+    { "name": "Learn mode", "url": "./#m=learn" }
+  ]
+}

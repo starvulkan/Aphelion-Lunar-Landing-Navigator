@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aphelion — Lunar Landing Navigator</title>
+  <meta name="description" content="Compare lunar landing sites and dates. See where the Sun and Earth sit against the real LOLA terrain horizon, and how long power and direct-to-Earth links last.">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" type="image/png" href="graphics/icon.png">
+  <link rel="apple-touch-icon" href="graphics/icon.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:ital,wdth,wght@0,62..125,100..900;1,62..125,100..900&family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="tools/lola-horizon.js" defer></script>
+  <script type="module" src="js/app.js"></script>
+</head>
+<body data-mode="mission" data-level="pro">
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <a class="brand" href="./" aria-label="Aphelion home">
+      <img src="graphics/logo.png" alt="" width="32" height="32">
+      <span class="brand-name">Aphelion</span>
+    </a>
+
+    <button class="site-btn" id="site-btn" aria-haspopup="dialog">
+      <span class="site-btn-name" id="site-name">Choose a site</span>
+      <span class="site-btn-coords" id="site-coords"></span>
+    </button>
+
+    <div class="epoch" role="group" aria-label="Landing time">
+      <label class="sr-only" for="epoch">Landing time (UTC)</label>
+      <input id="epoch" type="datetime-local" step="60">
+      <span class="utc">UTC</span>
+      <div class="steppers">
+        <button data-step="-86400" title="One day earlier">−1 d</button>
+        <button data-step="-3600" title="One hour earlier">−1 h</button>
+        <button data-step="3600" title="One hour later">+1 h</button>
+        <button data-step="86400" title="One day later">+1 d</button>
+        <button id="now-btn" title="Follow the current time">Now</button>
+      </div>
+    </div>
+
+    <label class="window">
+      <span>Surface stay</span>
+      <select id="window-days">
+        <option value="1">1 day</option>
+        <option value="3">3 days</option>
+        <option value="7">7 days</option>
+        <option value="14" selected>14 days</option>
+        <option value="29.53">1 lunar day</option>
+      </select>
+    </label>
+
+    <nav class="modes" role="tablist" aria-label="Mode">
+      <button role="tab" data-mode="mission" aria-selected="true">Mission</button>
+      <button role="tab" data-mode="learn" aria-selected="false">Learn</button>
+    </nav>
+
+    <button class="icon-btn" id="info-btn" aria-haspopup="dialog" title="Data sources and how to check them">
+      <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M12 10.5v6M12 7.2v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span class="sr-only">Data and verification</span>
+    </button>
+  </header>
+
+  <!-- ===================== Mission mode ===================== -->
+  <main id="main" class="mission" data-view="mission">
+    <section class="pano" aria-label="Site views">
+      <div class="view-tabs" role="tablist" aria-label="View">
+        <button role="tab" data-view="site3d" aria-selected="true">3D terrain</button>
+        <button role="tab" data-view="pano" aria-selected="false">Panorama</button>
+        <button role="tab" data-view="globe" aria-selected="false">Moon globe</button>
+      </div>
+      <div class="stage">
+        <canvas id="scene-canvas" aria-label="3D view. Drag to orbit."></canvas>
+        <canvas id="pano-canvas" aria-describedby="pano-desc" hidden></canvas>
+        <div class="scene-tools" id="scene-tools">
+          <label>Relief <select id="exag"><option value="1">true scale</option><option value="2" selected>×2</option><option value="4">×4</option></select></label>
+          <button id="zoom-in" aria-label="Zoom in">+</button>
+          <button id="zoom-out" aria-label="Zoom out">−</button>
+          <button id="reset-view">Reset view</button>
+        </div>
+        <div class="scene-tags" id="scene-tags" aria-hidden="true"></div>
+        <p class="scene-msg" id="scene-msg" hidden></p>
+      </div>
+      <p id="pano-desc" class="sr-only">A 360 degree view from the landing site. The terrain silhouette comes from LOLA laser altimetry. The pink track is the Sun's path and the light blue track is Earth's path during the surface stay.</p>
+      <div class="pano-key">
+        <span class="key sun">Sun</span>
+        <span class="key earth">Earth</span>
+        <span class="key terrain">LOLA terrain</span>
+        <span class="pano-note" id="pano-note"></span>
+      </div>
+    </section>
+
+    <section class="track" aria-label="Surface stay timeline">
+      <button class="play" id="play-btn" aria-label="Play">
+        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M7 5l12 7-12 7z" fill="currentColor"/></svg>
+      </button>
+      <canvas id="track-canvas" tabindex="0" aria-label="Visibility over the surface stay. Click or use arrow keys to move the time cursor."></canvas>
+      <output class="cursor-time" id="cursor-time"></output>
+    </section>
+
+    <section class="scoreband" aria-label="Overall score">
+      <div class="score-main">
+        <p class="score-label">Overall score</p>
+        <p class="score-num" id="score-num">–</p>
+        <p class="score-grade" id="score-grade"></p>
+      </div>
+      <div class="score-mid">
+        <p class="score-verdict" id="score-verdict"></p>
+        <dl class="bars score-factors" id="score-factors"></dl>
+      </div>
+      <div class="score-side">
+        <div class="level" role="group" aria-label="How much detail to show">
+          <button data-level="pro" aria-pressed="true">Professional</button>
+          <button data-level="edu" aria-pressed="false">Educational</button>
+        </div>
+        <p class="level-hint" id="level-hint"></p>
+        <label class="pro-only prio">Priority
+          <select id="priority"><option value="balanced">Balanced</option><option value="power">Power first</option><option value="comms">Comms first</option></select>
+        </label>
+      </div>
+    </section>
+
+    <section class="edu-panel edu-only" id="edu-panel" aria-label="What this means"></section>
+
+    <section class="readouts pro-only" aria-label="Current conditions">
+      <div class="ro sun">
+        <h2>Sun</h2>
+        <p class="ro-big" id="sun-el">—</p>
+        <p class="ro-sub" id="sun-sub"></p>
+        <p class="ro-next" id="sun-next"></p>
+      </div>
+      <div class="ro earth">
+        <h2>Earth</h2>
+        <p class="ro-big" id="earth-el">—</p>
+        <p class="ro-sub" id="earth-sub"></p>
+        <p class="ro-next" id="earth-next"></p>
+      </div>
+      <div class="ro stay">
+        <h2>Over the stay</h2>
+        <dl class="bars">
+          <div><dt>Sunlight</dt><dd><span class="bar sun"><i id="bar-sun"></i></span><b id="pct-sun">—</b></dd></div>
+          <div><dt>Earth in view</dt><dd><span class="bar earth"><i id="bar-earth"></i></span><b id="pct-earth">—</b></dd></div>
+          <div><dt>Both at once</dt><dd><span class="bar both"><i id="bar-both"></i></span><b id="pct-both">—</b></dd></div>
+        </dl>
+        <p class="ro-sub" id="dark-gap"></p>
+      </div>
+      <div class="ro slip">
+        <h2>If the landing slips</h2>
+        <table class="slip-table" id="slip-table"><tbody></tbody></table>
+      </div>
+    </section>
+
+    <section class="lower">
+      <figure class="sky pro-only">
+        <canvas id="sky-canvas" aria-label="Sky dome: zenith in the centre, horizon at the rim, north at the top"></canvas>
+        <figcaption>Sky dome, north up. The shaded rim is the terrain.</figcaption>
+      </figure>
+
+      <div class="sweep">
+        <div class="section-head">
+          <h2>Best landing days</h2>
+          <p>Each square is a landing at this time of day on a later date, scored over the chosen surface stay.</p>
+        </div>
+        <div class="sweep-legend">
+          <label><input type="radio" name="sweep-metric" value="sun" checked> Sunlight</label>
+          <label><input type="radio" name="sweep-metric" value="earth"> Earth in view</label>
+          <label><input type="radio" name="sweep-metric" value="both"> Both</label>
+        </div>
+        <div class="sweep-grid" id="sweep-grid" role="grid" aria-label="Landing date sweep"></div>
+        <p class="sweep-hint" id="sweep-hint">Select a square to move the landing to that date.</p>
+      </div>
+
+      <aside class="facts pro-only" aria-label="Site details">
+        <h2 id="facts-title">Site</h2>
+        <dl id="facts"></dl>
+        <p class="facts-note" id="facts-note"></p>
+        <div class="facts-actions">
+          <button class="btn" id="pin-btn">Pin to comparison</button>
+          <a class="btn ghost" id="horizons-link" target="_blank" rel="noopener">Check in JPL Horizons</a>
+          <button class="btn ghost" id="share-btn">Copy link</button>
+        </div>
+      </aside>
+    </section>
+
+    <section class="season pro-only" aria-label="Season and patterns">
+      <div class="section-head">
+        <h2>Season and patterns</h2>
+        <p>The whole year for this site. The band on top is the southern-summer index (SAOQ) from our team's report; the curves are real terrain-based sunlight and Earth visibility for a stay that starts on each day. Select a day to land then.</p>
+      </div>
+      <div class="season-body">
+        <div class="season-chart">
+          <div class="season-years"><button id="year-prev" aria-label="Previous year">‹</button><output id="season-year"></output><button id="year-next" aria-label="Next year">›</button></div>
+          <canvas id="season-canvas" tabindex="0" aria-label="Year chart of season index, sunlight and Earth visibility"></canvas>
+        </div>
+        <ul class="findings" id="findings"></ul>
+      </div>
+    </section>
+
+    <section class="compare pro-only" aria-label="Comparison">
+      <div class="section-head">
+        <h2>Comparison</h2>
+        <p id="compare-hint">Pin scenarios to compare sites and dates side by side.</p>
+      </div>
+      <div class="table-wrap">
+        <table class="compare-table" id="compare-table">
+          <thead>
+            <tr>
+              <th scope="col">Site</th>
+              <th scope="col" class="num">Score</th>
+              <th scope="col">Landing (UTC)</th>
+              <th scope="col">Stay</th>
+              <th scope="col" class="num">Sun at landing</th>
+              <th scope="col" class="num">Sunlight</th>
+              <th scope="col" class="num">Longest dark</th>
+              <th scope="col" class="num">Earth in view</th>
+              <th scope="col" class="num">Both</th>
+              <th scope="col" class="num">Ground</th>
+              <th scope="col"><span class="sr-only">Actions</span></th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="compare-actions">
+        <button class="btn ghost" id="export-csv">Download CSV</button>
+        <button class="btn ghost" id="clear-compare">Clear</button>
+      </div>
+    </section>
+
+    <footer class="provenance" id="provenance"></footer>
+  </main>
+
+  <!-- ===================== Learn mode ===================== -->
+  <svg class="defs" width="0" height="0" aria-hidden="true">
+    <filter id="liquid" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="7" result="n"/>
+      <feGaussianBlur in="n" stdDeviation="2" result="nb"/>
+      <feDisplacementMap in="SourceGraphic" in2="nb" scale="38" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </svg>
+  <main class="learn" data-view="learn" hidden>
+    <div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div>
+    <!-- Hub -->
+    <div id="learn-hub">
+      <section class="hub-hero">
+        <img class="contours" src="graphics/contours-south-pole.svg" alt="" aria-hidden="true">
+        <p class="hub-tag reveal">mission academy · lunar south pole</p>
+        <h1 class="mega" aria-label="Land where the Sun never sets">
+          <span class="line"><span>Land where</span></span>
+          <span class="line"><span>the <em class="sun-word">Sun</em> never</span></span>
+          <span class="line"><span><em class="earth-word">sets</em></span></span>
+        </h1>
+        <div class="hub-cta reveal">
+          <button class="chunk" id="hub-start"><span class="chunk-ico" aria-hidden="true">▶</span><span class="roll"><span id="hub-start-label">Start lesson 1</span></span></button>
+          <button class="chunk ghost" id="hub-missions"><span class="roll"><span>Jump to missions</span></span></button>
+        </div>
+        <aside class="next-card" id="next-card" aria-live="off"></aside>
+      </section>
+
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-row"><span>Sunlight</span><span>Earthrise</span><span>Shadow</span><span>Ice</span><span>Horizon</span><span>Sunlight</span><span>Earthrise</span><span>Shadow</span><span>Ice</span><span>Horizon</span></div>
+        <div class="marquee-row rev"><span>Ridge</span><span>Crater</span><span>Libration</span><span>Season</span><span>Signal</span><span>Ridge</span><span>Crater</span><span>Libration</span><span>Season</span><span>Signal</span></div>
+      </div>
+
+      <section class="statement" id="statement">
+        <p class="hub-tag">why it is hard</p>
+        <p class="statement-text" id="statement-text">At the Moon's south pole the <em class="sun-word">Sun</em> skims the horizon, never more than a degree or two up. One <em>ridge</em> gets months of light. The <em>crater</em> beside it has been dark for billions of years. <em class="earth-word">Earth</em> bobs up and down twice a month, and with it your radio link. Pick the right place and the right day, and a lander <em>lives</em>.</p>
+      </section>
+
+      <section class="hub-rank">
+        <div class="rank">
+          <svg class="rank-ring" viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="28"/><circle id="rank-arc" cx="32" cy="32" r="28"/></svg>
+          <div>
+            <p class="rank-title" id="rank-title">Cadet</p>
+            <p class="rank-xp" id="rank-xp">0 XP</p>
+          </div>
+        </div>
+        <ul class="badges" id="badges" aria-label="Badges"></ul>
+      </section>
+
+      <section class="hub-section">
+        <h2 class="split"><span class="line"><span>Flight</span></span><span class="line"><span><em>plan</em></span></span></h2>
+        <ol class="cards" id="lesson-cards"></ol>
+      </section>
+
+      <section class="hub-section" id="missions-section">
+        <h2 class="split"><span class="line"><span>Your</span></span><span class="line"><span><em>missions</em></span></span></h2>
+        <p class="hub-note">Missions are checked against your real scenario in Mission mode, with the same terrain and ephemeris.</p>
+        <ul class="cards missions" id="mission-cards"></ul>
+      </section>
+    </div>
+
+    <!-- Lesson / mission page -->
+    <div id="learn-page" hidden>
+      <button class="chunk ghost back" id="learn-back"><span class="chunk-ico" aria-hidden="true">←</span><span class="roll"><span>All lessons</span></span></button>
+      <div class="learn-body">
+        <nav class="path" aria-label="Lessons">
+          <h2>Flight plan</h2>
+          <ol id="lesson-list"></ol>
+          <h2>Missions</h2>
+          <ul id="challenge-list"></ul>
+        </nav>
+        <article class="lesson" id="lesson" aria-live="polite"></article>
+      </div>
+    </div>
+  </main>
+
+  <!-- ===================== Dialogs ===================== -->
+  <dialog class="sheet" id="site-dialog" aria-labelledby="site-dialog-title">
+    <form method="dialog" class="sheet-head">
+      <h2 id="site-dialog-title">Landing sites</h2>
+      <button class="icon-btn" value="close" aria-label="Close">✕</button>
+    </form>
+    <div class="site-search">
+      <input type="search" id="site-search" placeholder="Search by name, mission or agency" aria-label="Search sites">
+    </div>
+    <div class="chips" id="site-cats" role="tablist" aria-label="Filter"></div>
+    <ul class="site-list" id="site-list"></ul>
+    <details class="custom" id="custom-panel">
+      <summary>Add a site by coordinates</summary>
+      <form id="custom-form" class="custom-form">
+        <label>Name <input name="name" required maxlength="60" placeholder="Ridge camp"></label>
+        <label>Latitude (°N, south negative) <input name="lat" type="number" step="0.0001" min="-90" max="90" required></label>
+        <label>Longitude (°E, −180 to 180) <input name="lon" type="number" step="0.0001" min="-180" max="360" required></label>
+        <p class="hint">Ground height and the terrain horizon come from LOLA. Check coordinates in <a href="https://quickmap.lroc.asu.edu/" target="_blank" rel="noopener">QuickMap</a> or <a href="https://trek.nasa.gov/moon/" target="_blank" rel="noopener">Moon Trek</a>.</p>
+        <button class="btn" type="submit">Add site</button>
+      </form>
+    </details>
+  </dialog>
+
+  <dialog class="sheet wide" id="info-dialog" aria-labelledby="info-title">
+    <form method="dialog" class="sheet-head">
+      <h2 id="info-title">Data and how to check it</h2>
+      <button class="icon-btn" value="close" aria-label="Close">✕</button>
+    </form>
+    <div class="info-body" id="info-body"></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+</body>
+</html>
