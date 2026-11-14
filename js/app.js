@@ -34,7 +34,7 @@ const el = (tag, attrs = {}, ...kids) => {
 
 /* ------------------------------------------------------------ formatting */
 const fmtDur = sec => {
-  if (sec == null) return '—';
+  if (sec == null) return '–';
   const s = Math.max(0, Math.round(sec));
   const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
   if (d) return `${d} d ${String(h).padStart(2, '0')} h`;
@@ -44,8 +44,10 @@ const fmtDur = sec => {
 const fmtUTC = d => `${d.toISOString().slice(0, 10)} ${d.toISOString().slice(11, 16)}`;
 const fmtShort = d => `${d.toLocaleString('en', { month: 'short', timeZone: 'UTC' })} ${d.getUTCDate()}, ${d.toISOString().slice(11, 16)}`;
 const pct = f => `${Math.round(f * 100)} %`;
+const fmtHours = h => h >= 48 ? `${(h / 24).toFixed(1)} d` : `${Math.round(h)} h`;
 const fmtLat = v => `${Math.abs(v).toFixed(v === Math.round(v) ? 0 : 3)}°${v < 0 ? 'S' : 'N'}`;
 const fmtLon = v => { const w = ((v + 540) % 360) - 180; return `${Math.abs(w).toFixed(w === Math.round(w) ? 0 : 3)}°${w < 0 ? 'W' : 'E'}`; };
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 const toLocalInput = d => d.toISOString().slice(0, 16);
 
 /* ------------------------------------------------------------------- app */
@@ -108,7 +110,7 @@ class App {
     const custom = this.terrain.forCoordinates(site.lat, site.lon);
     if (custom) return { ...site, ground: custom.ground_m, elevation: custom.ground_m + OBSERVER_M, horizon: { elevations: custom.elevations, source: custom.source, kind: 'lola', coarse: custom.coarse } };
     const sph = this.eph.sphereHorizon(OBSERVER_M);
-    return { ...site, ground: null, elevation: OBSERVER_M, horizon: { ...sph, source: 'Bare sphere — LOLA tiles not loaded for this point' } };
+    return { ...site, ground: null, elevation: OBSERVER_M, horizon: { ...sph, source: 'Bare sphere (LOLA tiles not loaded for this point)' } };
   }
 
   stepFor(days) { return days <= 1 ? 5 : days <= 3 ? 10 : days <= 7 ? 15 : days <= 14 ? 20 : 30; }
@@ -252,11 +254,18 @@ class App {
     const setBar = (id, f) => { $(`#bar-${id}`).style.width = `${(f * 100).toFixed(1)}%`; $(`#pct-${id}`).textContent = pct(f); };
     setBar('sun', tl.sunFraction); setBar('earth', tl.earthFraction); setBar('both', tl.bothFraction);
     const ev = this.evaluateFromTimeline(tl);
-    const sunTxt = ev.longestDarkH > 0 ? `Longest time without sunlight: ${fmtDur(ev.longestDarkH * 3600)}.` : 'The Sun stays above the terrain for the whole stay.';
-    const earthTxt = ev.longestNoEarthH === 0 ? 'Earth stays in view throughout.'
-      : tl.earthFraction === 0 ? 'Earth never comes into view — a relay is required.'
-      : `Longest time without Earth: ${fmtDur(ev.longestNoEarthH * 3600)}.`;
-    $('#dark-gap').textContent = `${sunTxt} ${earthTxt}`;
+    this.ev = ev;
+    const days = this.state.days, stayH = days * 24;
+    $('#stay-len').textContent = days === 29.53 ? 'lunar-day' : `${days}-day`;
+    const kv = [
+      ['Sunlit time', `${fmtHours(tl.sunFraction * stayH)}`],
+      ['Link time', `${fmtHours(tl.earthFraction * stayH)}`],
+      ['Longest dark', ev.longestDarkH > 0 ? fmtDur(ev.longestDarkH * 3600) : 'none', ev.longestDarkH > 0 ? 'warn' : ''],
+      ['Longest without Earth', tl.earthFraction === 0 ? 'whole stay' : ev.longestNoEarthH > 0 ? fmtDur(ev.longestNoEarthH * 3600) : 'none', ev.longestNoEarthH > 0 ? 'warn' : ''],
+      ['Sun at landing', fmtDeg(r.sun.elevation)],
+      ['Earth phase', `${Math.round(lit * 100)} % lit`]
+    ];
+    $('#stay-kv').innerHTML = kv.map(([k, v, c]) => `<div class="${c || ''}"><dt>${k}</dt><dd>${v}</dd></div>`).join('');
 
     this.renderScore(ev);
     this.renderSlip();
@@ -284,12 +293,16 @@ class App {
     const t = new Date(smp.t);
     this.syncScene(false);
     $('#cursor-time').textContent = i === 0 ? `Landing · ${fmtShort(t)} UTC` : `+${fmtDur((smp.t - tl.samples[0].t) / 1000)} · ${fmtShort(t)} UTC`;
+    $('#now-time').textContent = i === 0 ? `landing, ${fmtShort(t)} UTC` : `${fmtShort(t)} UTC (+${fmtDur((smp.t - tl.samples[0].t) / 1000)})`;
 
-    // readouts at the cursor
-    $('#sun-el').textContent = fmtDeg(smp.sunEl);
-    $('#sun-sub').innerHTML = `Azimuth ${smp.sunAz.toFixed(1)}°. Terrain in that direction ${fmtDeg(smp.sunHz)}. ${smp.sun ? '<span class="state">in sunlight</span>' : '<span class="state off">behind terrain</span>'}`;
-    $('#earth-el').textContent = fmtDeg(smp.earthEl);
-    $('#earth-sub').innerHTML = `Azimuth ${smp.earthAz.toFixed(1)}°. Terrain in that direction ${fmtDeg(smp.earthHz)}. ${smp.earth ? '<span class="state">in view</span>' : '<span class="state off">hidden</span>'}`;
+    // readouts at the cursor: elevation, azimuth, terrain height in that direction, and the margin between them
+    for (const [k, el, az, hz, vis] of [['sun', smp.sunEl, smp.sunAz, smp.sunHz, smp.sun], ['earth', smp.earthEl, smp.earthAz, smp.earthHz, smp.earth]]) {
+      $(`#${k}-el`).textContent = fmtDeg(el);
+      $(`#${k}-az`).textContent = `${az.toFixed(1)}°`;
+      $(`#${k}-hz`).textContent = fmtDeg(hz);
+      $(`#${k}-clr`).innerHTML = `<span class="clr ${vis ? 'on' : 'off'}">${fmtDeg(el - hz)}</span>`;
+      $(`#${k}-el`).closest('tr').classList.toggle('hidden-now', !vis);
+    }
 
     // next transitions from the cursor time (throttled while scrubbing)
     cancelAnimationFrame(this._nextRaf);
@@ -297,8 +310,8 @@ class App {
       const ns = i === 0 ? r.nextSun : this.eph.nextTransition(s, t, 'sun', s.horizon);
       const ne = i === 0 ? r.nextEarth : this.eph.nextTransition(s, t, 'earth', s.horizon);
       const txt = (n, setWord, riseWord, visible) => n
-        ? `${n.rising ? riseWord : setWord} in <strong>${fmtDur(n.seconds)}</strong><br><span class="ro-sub">${fmtShort(n.time)} UTC</span>`
-        : `${visible ? `No ${setWord.toLowerCase()}` : `No ${riseWord.toLowerCase()}`} in the next 30 days`;
+        ? `<span>${n.rising ? riseWord : setWord}</span><b>${fmtDur(n.seconds)}</b><time>${fmtShort(n.time)}</time>`
+        : `<span>${visible ? `No ${setWord.toLowerCase()}` : `No ${riseWord.toLowerCase()}`}</span><b>none</b><time>next 30 days</time>`;
       $('#sun-next').innerHTML = txt(ns, 'Sunset', 'Sunrise', smp.sun);
       $('#earth-next').innerHTML = txt(ne, 'Earthset', 'Earthrise', smp.earth);
     });
@@ -335,7 +348,7 @@ class App {
     if (s.org) rows.unshift(['Mission', s.org]);
     if (s.date) rows.unshift(['Date', s.date]);
     $('#facts').innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
-    const kind = { landed: 'Measured landing point.', target: 'Published target point.', region: 'Reference point inside a ~15 km candidate region — not an official landing site.', feature: 'Named feature or geometric reference point.', custom: 'Your custom point.' }[s.kind || 'custom'];
+    const kind = { landed: 'Measured landing point.', target: 'Published target point.', region: 'Reference point inside a ~15 km candidate region, not an official landing site.', feature: 'Named feature or geometric reference point.', custom: 'Your custom point.' }[s.kind || 'custom'];
     $('#facts-note').textContent = [s.note, kind, s.src ? `Coordinates: ${s.src}.` : ''].filter(Boolean).join(' ');
     const t = new Date(r.timeline.samples[0].t);
     $('#horizons-link').href = this.eph.horizonsQuery(s, t, '10', { hours: 24, step: '1h' });
@@ -345,13 +358,18 @@ class App {
     const s = this.site;
     const p = this.terrain.meta;
     $('#provenance').innerHTML = `
-      <span><b>Sun & Earth:</b> computed in your browser (Meeus 2nd ed. ch. 25 & 47, IAU 2009 lunar orientation), checked against NASA/JPL Horizons — typical difference under 0.02°.</span>
-      <span><b>Terrain:</b> ${s.horizon.source}${s.horizon.coarse ? ' — coarse grid, treat ridges within a few km as approximate' : ''}. Observer ${OBSERVER_M} m above ground, no atmosphere, angles refer to the centre of the Sun's and Earth's discs.</span>
+      <span><b>Sun & Earth:</b> computed in your browser (Meeus 2nd ed. ch. 25 & 47, IAU 2009 lunar orientation), checked against NASA/JPL Horizons (typical difference under 0.02°).</span>
+      <span><b>Terrain:</b> ${s.horizon.source}${s.horizon.coarse ? ' (coarse grid: treat ridges within a few km as approximate)' : ''}. Observer ${OBSERVER_M} m above ground, no atmosphere, angles refer to the centre of the Sun's and Earth's discs.</span>
       ${p ? `<span><b>Horizon data generated:</b> ${p.generated.slice(0, 10)}.</span>` : ''}`;
   }
 
   /* --------------------------------------------------------- score, level */
   bindLevel() {
+    $('#edu-panel').addEventListener('pointermove', e => {
+      const c = e.target.closest('.ecard, .glass'); if (!c) return;
+      const r = c.getBoundingClientRect();
+      c.style.setProperty('--mx', `${e.clientX - r.left}px`); c.style.setProperty('--my', `${e.clientY - r.top}px`);
+    });
     document.querySelectorAll('.level button').forEach(b => b.addEventListener('click', () => this.setLevel(b.dataset.level)));
     const sel = $('#priority');
     sel.value = this.state.priority;
@@ -364,8 +382,7 @@ class App {
     this.store.set('level', level);
     document.body.dataset.level = level;
     document.querySelectorAll('.level button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.level === level)));
-    $('#level-hint').textContent = level === 'pro' ? 'Every number at a glance, for mission teams.' : 'The key points in plain words. Switch to Professional for all the data.';
-    if (redraw && this.result) requestAnimationFrame(() => this.redraw());
+    if (redraw && this.result) { requestAnimationFrame(() => this.redraw()); if (level === 'edu') this.renderEdu(this.ev, this.score, this.slope); }
   }
 
   renderScore(ev) {
@@ -390,45 +407,135 @@ class App {
         : `A poor match for a ${stay} stay starting now, mostly because of ${why}. Try another day or another site.`;
     }
     $('#score-verdict').textContent = verdict;
-    const names = { power: 'Power', comms: 'Comms', night: 'Night survival', terrain: 'Terrain' };
+    const names = { power: 'Power', comms: 'Comms', night: 'Night', terrain: 'Terrain' };
     const cls = { power: 'sun', comms: 'earth', night: 'both', terrain: 'both' };
     $('#score-factors').innerHTML = Object.keys(names).map(k => sc.factors[k] == null
-      ? `<div><dt>${names[k]}</dt><dd><span class="bar"><i></i></span><b>n/a</b></dd></div>`
-      : `<div title="Weight ${Math.round(sc.weights[k] * 100)} %"><dt>${names[k]}</dt><dd><span class="bar ${cls[k]}"><i style="width:${(sc.factors[k] * 100).toFixed(1)}%"></i></span><b>${Math.round(sc.factors[k] * 100)}</b></dd></div>`).join('');
-    this.renderEdu(ev, sc, slope);
+      ? `<div><dt>${names[k]}</dt><dd><b>n/a</b><span class="bar"><i></i></span></dd></div>`
+      : `<div title="${names[k]}: ${Math.round(sc.factors[k] * 100)} / 100, weight ${Math.round(sc.weights[k] * 100)} %"><dt>${names[k]} <small>×${sc.weights[k].toFixed(2)}</small></dt><dd><b>${Math.round(sc.factors[k] * 100)}</b><span class="bar ${cls[k]}"><i style="width:${(sc.factors[k] * 100).toFixed(1)}%"></i></span></dd></div>`).join('');
+    if (this.state.level === 'edu') this.renderEdu(ev, sc, slope);
   }
 
   renderEdu(ev, sc, slope) {
-    const r = this.result, s = this.site, tl = r.timeline;
+    if (!ev || !sc || !this.result) return;
+    const r = this.result, s = this.site, tl = r.timeline, days = this.state.days;
     const sunP = Math.round(tl.sunFraction * 100), earthP = Math.round(tl.earthFraction * 100);
+    const stay = days === 29.53 ? 'lunar-day' : `${days}-day`;
+    const word = { Excellent: 'a great pick', Good: 'a good pick', Marginal: 'a risky pick', Poor: 'a tough spot' }[sc.grade];
+    const landing = new Date(tl.samples[0].t).toLocaleString('en', { month: 'long', day: 'numeric', timeZone: 'UTC' });
+
+    // One pill per day of the stay: how much of that day had the Sun / Earth up.
+    const per = Math.round(1440 / tl.stepMin), nDays = Math.min(30, Math.ceil(tl.samples.length / per));
+    const daily = Array.from({ length: nDays }, (_, d) => {
+      const part = tl.samples.slice(d * per, (d + 1) * per);
+      return { sun: part.filter(x => x.sun).length / part.length, earth: part.filter(x => x.earth).length / part.length };
+    });
+    const strip = k => `<div class="daystrip ${k}" role="img" aria-label="${daily.filter(d => d[k] > 0.5).length} of ${nDays} days mostly ${k === 'sun' ? 'sunlit' : 'with Earth in view'}">${daily.map((d, i) => `<i style="--f:${d[k].toFixed(2)}" title="Day ${i + 1}: ${Math.round(d[k] * 100)} %"></i>`).join('')}</div>`;
+    const goodDays = k => daily.filter(d => d[k] > 0.5).length;
+
     const sunW = Math.abs(r.sun.elevation) / 0.533;
-    const sunNow = r.sun.visible
-      ? `Right now the Sun is ${r.sun.elevation.toFixed(1)}° above a level horizon${r.sun.elevation < 5 ? ` — only about ${sunW < 1.5 ? 'one' : Math.round(sunW)} Sun-width${sunW < 1.5 ? '' : 's'} up, so shadows are very long` : ''}.`
-      : (r.sun.elevation > 0 ? `Right now the Sun is ${r.sun.elevation.toFixed(1)}° up but hidden behind higher ground.` : 'Right now the Sun is below the horizon.');
-    const power = sunP >= 99 ? 'Solar panels would have light for the whole stay.'
-      : sunP >= 70 ? `Solar panels would have light most of the time. Batteries must cover up to ${fmtDur(ev.longestDarkH * 3600)} of darkness.`
-      : sunP > 0 ? `Sunlight comes and goes. The longest dark spell lasts ${fmtDur(ev.longestDarkH * 3600)}, which is hard on batteries and heaters.`
-      : 'No sunlight reaches this spot during the stay. A lander here needs another power source.';
-    const comms = earthP >= 99 ? 'The lander could talk directly to Earth the whole time.'
-      : earthP > 0 ? `Radio contact works only while Earth is above the ground around the site. The longest gap is ${fmtDur(ev.longestNoEarthH * 3600)}.`
-      : 'Earth never rises here during the stay. Messages would have to go through a relay satellite.';
-    const ev2 = (n, set, rise) => n ? `${n.rising ? rise : set} in <b>${fmtDur(n.seconds)}</b>` : `No ${set.toLowerCase()} or ${rise.toLowerCase()} for 30 days`;
-    const ground = slope ? `${slope.deg < 8 ? 'Gentle ground' : slope.deg < 15 ? 'Sloping ground' : 'Steep ground'}: about ${slope.deg.toFixed(0)}° of slope${slope.deg >= 15 ? ', too steep for most landers' : slope.deg >= 8 ? ', near the limit for landers' : ''}.` : 'Slope is not available for this point yet.';
-    const cards = [
-      ['sun', 'Power', `${sunP} %`, 'of the stay in sunlight', `${power} ${sunNow}`, 5],
-      ['earth', 'Radio link to Earth', `${earthP} %`, 'of the stay with Earth in view', comms, 6],
-      ['', 'What happens next', '', '', `${ev2(r.nextSun, 'Sunset', 'Sunrise')}.<br>${ev2(r.nextEarth, 'Earthset', 'Earthrise')}.<br>On the Moon a full day lasts 29.5 Earth days, so these events are far apart.`, 2],
-      ['', 'The ground', s.ground != null ? `${Math.round(s.ground).toLocaleString('en')} m` : '—', 'height of the site', `${ground} Measured by NASA's LOLA laser altimeter.`, 7]
-    ];
+    const sunNow = r.sun.visible && r.sun.elevation < 0.27
+      ? 'The Sun is sitting right on the horizon. This spot is on high ground, so it can see a little past a flat horizon and stays lit. Shadows here are extremely long.'
+      : r.sun.visible
+      ? `The Sun is ${r.sun.elevation.toFixed(1)}° up${r.sun.elevation < 5 ? `, only about ${sunW < 1.5 ? 'one Sun-width' : `${Math.round(sunW)} Sun-widths`} above a flat horizon. Shadows here are very long` : ''}.`
+      : r.sun.elevation > 0 ? `The Sun is ${r.sun.elevation.toFixed(1)}° up, but a hill is in the way, so the site is in shadow.` : 'The Sun is below the horizon, so it is night here.';
+    const earthNow = r.earth.visible ? `Earth is ${r.earth.elevation.toFixed(1)}° up and in view, so the radio link works.` : r.earth.elevation > 0 ? `Earth is ${r.earth.elevation.toFixed(1)}° up, but hills around the site block it, so there is no direct radio link right now.` : 'Earth is below the horizon, so there is no direct radio link right now.';
+    const next = (n, set, rise) => n ? `<b>${n.rising ? rise : set}</b> in ${fmtDur(n.seconds)}` : `No ${set.toLowerCase()} or ${rise.toLowerCase()} for at least 30 days`;
+
+    const power = sunP >= 99 ? 'Solar panels get light for the whole stay. That is rare on the Moon!'
+      : sunP >= 70 ? 'Solar panels get light most of the time, with a few dark spells.'
+      : sunP > 0 ? 'Sunlight comes and goes, so the lander lives on batteries part of the time.'
+      : 'No sunlight reaches this spot during the stay. The lander would need another power source.';
+    const comms = earthP >= 99 ? 'Earth stays above the horizon the whole time, so the lander can always phone home.'
+      : earthP > 0 ? 'The radio only works while Earth is above the hills around the site.'
+      : 'Earth never rises here during the stay. Messages would need a relay satellite.';
+    const darkH = ev.longestDarkH;
+    const night = darkH === 0 ? 'No dark spell at all. Batteries just cover small dips.'
+      : darkH < 24 ? 'A short dark spell. Batteries can handle that.'
+      : darkH < 24 * 5 ? 'Several days of darkness. The lander needs big batteries and heaters, because it gets very cold.'
+      : 'A very long night. Most solar landers would not survive it.';
+    const deg = slope?.deg;
+    const ground = deg == null ? 'We do not have a terrain patch for this exact spot yet.'
+      : deg < 8 ? 'Gentle ground. A lander can touch down safely.'
+      : deg < 15 ? 'Sloping ground, close to what landers can handle.'
+      : 'Steep ground. Most landers would tip over.';
+    const battery = Math.max(0.04, sc.factors.night ?? 1);
+    const tilt = Math.min(30, deg ?? 0);
+
+    const ring = 2 * Math.PI * 52, off = ring * (1 - sc.score / 100);
+    const card = (cls, tag, big, unit, visual, text, lesson) => `
+      <article class="ecard glass ${cls}">
+        <p class="ecard-tag">${tag}</p>
+        <p class="ecard-big">${big}</p>
+        <p class="ecard-unit">${unit}</p>
+        ${visual}
+        <p class="ecard-text">${text}</p>
+        <button class="chunk ghost mini" data-lesson="${lesson}"><span class="roll"><span>Learn why</span></span></button>
+      </article>`;
+
+    $('#edu-panel').innerHTML = `
+      <div class="edu-hero">
+        <div class="edu-title">
+          <p class="hub-tag">landing report · ${stay} stay from ${landing}</p>
+          <h2 class="edu-mega"><span class="line">${esc(s.name)}</span><span class="line">is <em class="grade-${sc.grade.toLowerCase()}">${word}</em></span></h2>
+        </div>
+        <div class="score-orb glass" data-grade="${sc.grade.toLowerCase()}">
+          <svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52"/><circle class="arc" cx="60" cy="60" r="52" style="stroke-dasharray:${ring.toFixed(1)};stroke-dashoffset:${off.toFixed(1)}"/></svg>
+          <div class="orb-num"><b>${Math.round(sc.score)}</b><span>/100</span></div>
+          <p class="orb-grade">${sc.grade}</p>
+        </div>
+      </div>
+      <p class="edu-verdict">${esc($('#score-verdict').textContent)}</p>
+
+      <div class="edu-grid">
+        ${card('sun', 'Power', `${sunP}<small>%</small>`, 'of the stay in sunlight', `${strip('sun')}<p class="strip-cap">${goodDays('sun')} of ${nDays} days mostly sunny</p>`, power, 5)}
+        ${card('earth', 'Radio link', `${earthP}<small>%</small>`, 'of the stay with Earth in view', `${strip('earth')}<p class="strip-cap">${goodDays('earth')} of ${nDays} days mostly in contact</p>`, comms, 6)}
+        ${card('night', 'Longest night', darkH === 0 ? '0<small>h</small>' : darkH >= 48 ? `${+(darkH / 24).toFixed(1)}<small>days</small>` : `${Math.round(darkH)}<small>h</small>`, 'without sunlight in one go',
+          `<div class="battery" role="img" aria-label="Battery needed"><i style="--f:${battery.toFixed(2)}"></i></div><p class="strip-cap">${darkH === 0 ? 'Battery barely used' : darkH < 24 ? 'Battery: no problem' : 'Battery: working hard'}</p>`, night, 4)}
+        ${card('ground', 'Ground', deg == null ? '?' : `${deg.toFixed(0)}<small>°</small>`, 'slope at the landing spot',
+          `<svg class="slope" viewBox="0 0 200 80" role="img" aria-label="Slope of ${deg?.toFixed(0) ?? 'unknown'} degrees"><line class="level-line" x1="10" y1="58" x2="190" y2="58"/><g transform="rotate(${-tilt} 100 58)"><rect x="10" y="58" width="180" height="12" rx="3"/><path d="M86 58 l6 -12 h16 l6 12 M92 46 v-8 h16 v8 M100 38 v-8" /></g></svg><p class="strip-cap">${s.ground != null ? `${Math.round(s.ground).toLocaleString('en')} m height, from LOLA` : 'Height not loaded'}</p>`, ground, 7)}
+      </div>
+
+      <div class="edu-now glass">
+        <div class="now-col sun"><p class="ecard-tag">Sun right now</p><p>${sunNow}</p><p class="now-next">${next(r.nextSun, 'Sunset', 'Sunrise')}</p></div>
+        <div class="now-col earth"><p class="ecard-tag">Earth right now</p><p>${earthNow}</p><p class="now-next">${next(r.nextEarth, 'Earthset', 'Earthrise')}</p></div>
+        <p class="now-foot">A day on the Moon lasts about 29.5 Earth days, so sunrises and sunsets are far apart. Drag along the timeline above to travel through the stay.</p>
+      </div>
+
+      <div class="edu-alt glass">
+        <div><p class="ecard-tag">Challenge</p><h3>Can you find a better spot?</h3><p id="alt-note">Checking other sites for the same day…</p></div>
+        <ul class="alt-list" id="alt-list"></ul>
+      </div>`;
+
     const host = $('#edu-panel');
-    host.innerHTML = cards.map(([c, title, big, unit, text, lesson]) => `
-      <article class="edu-card ${c}">
-        <h3>${title}</h3>
-        ${big ? `<p class="edu-big">${big}</p><p class="edu-unit">${unit}</p>` : ''}
-        <p class="edu-text">${text}</p>
-        <button class="link-btn" data-lesson="${lesson}">Learn why</button>
-      </article>`).join('');
     host.querySelectorAll('[data-lesson]').forEach(b => b.addEventListener('click', () => { this.setMode('learn'); this.learn.go({ type: 'lesson', index: Number(b.dataset.lesson) }); }));
+    this.renderAlternatives(sc.score);
+  }
+
+  /** Score other sites for the same landing time, a few per frame, and offer the best ones. */
+  renderAlternatives(current) {
+    const token = (this._altToken = (this._altToken || 0) + 1);
+    const polar = this.site.lat < -80;
+    const pool = SITES.filter(x => x.id !== this.site.id && ['region', 'target', 'landed'].includes(x.kind) && (polar ? x.lat < -80 : true));
+    const out = [];
+    let k = 0;
+    const work = () => {
+      if (token !== this._altToken || this.state.level !== 'edu') return;
+      const until = performance.now() + 14;
+      while (k < pool.length && performance.now() < until) {
+        try { out.push({ site: pool[k], score: Math.round(this.evaluate(pool[k], this.state.epoch, this.state.days).score.score) }); } catch { /* skip */ }
+        k++;
+      }
+      if (k < pool.length) return setTimeout(work, 0);
+      out.sort((a, b) => b.score - a.score);
+      current = Math.round(current);
+      const top = out.slice(0, 3), better = top.filter(x => x.score > current);
+      $('#alt-note').textContent = better.length
+        ? `${better.length === 1 ? 'One site scores' : `${better.length} sites score`} higher for this landing time${polar ? ' near the south pole' : ''}. Tap one to fly there.`
+        : `Nothing${polar ? ' near the south pole' : ''} beats this spot for this landing time. Nice choice! Here are the runners-up.`;
+      $('#alt-list').innerHTML = top.map(x => `<li><button data-site="${x.site.id}"><span class="alt-score" data-grade="${x.score >= 80 ? 'excellent' : x.score >= 60 ? 'good' : x.score >= 40 ? 'marginal' : 'poor'}">${x.score}</span><span class="alt-name">${esc(x.site.name)}</span><span class="alt-diff ${x.score > current ? "up" : x.score < current ? "down" : ""}">${x.score === current ? 'tie' : `${x.score > current ? '+' : '−'}${Math.abs(x.score - current)}`}</span></button></li>`).join('');
+      $('#alt-list').querySelectorAll('button').forEach(b => b.addEventListener('click', () => { this.state.siteId = b.dataset.site; this.refresh(); window.scrollTo({ top: 0, behavior: 'smooth' }); }));
+    };
+    setTimeout(work, 120);
   }
 
   /* ------------------------------------------------------------ 3D views */
@@ -470,6 +577,7 @@ class App {
     $('#scene-canvas').hidden = view === 'pano';
     $('#scene-tools').hidden = view === 'pano';
     document.querySelector('#scene-tools label').hidden = view !== 'site3d';
+    $('#scene-tags').hidden = view === 'pano';
     this.scene3d?.setActive(view !== 'pano' && this.state.mode !== 'learn');
     if (view === 'globe') {
       this.scene3d?.setMode('globe');
@@ -567,13 +675,20 @@ class App {
     const years = [0, 1, 2, 3].map(k => { const y = year + k; this._seasonCache.has(y) || this._seasonCache.set(y, seasonYear(this.eph, y)); return this._seasonCache.get(y); });
     const shifts = years.slice(1).map((y, i) => Math.round((years[i].min.t - Date.UTC(years[i].year, 0, 1) - (y.min.t - Date.UTC(y.year, 0, 1))) / DAY));
     const items = [
-      ['Season at landing', `SAOQ <b>${q.toFixed(0)} %</b>. The sub-solar point is ${Math.abs(now).toFixed(2)}° ${now < 0 ? 'south' : 'north'} of the lunar equator${south ? (q >= 90 ? ' — deep in southern summer.' : q > 0 ? '.' : ' — southern winter.') : '.'}`],
+      ['Season at landing', `SAOQ <b>${q.toFixed(0)} %</b>. The sub-solar point is ${Math.abs(now).toFixed(2)}° ${now < 0 ? 'south' : 'north'} of the lunar equator${south ? (q >= 90 ? ': deep in southern summer.' : q > 0 ? '.': ': southern winter.') : '.'}`],
       [`Southern summer ${year}`, season.window ? `SAOQ stays at 90 % or more from <b>${d(season.window.start)} to ${d(season.window.end)}</b>, peaking on ${d(season.min.t)}.` : 'SAOQ never reaches 90 % in this year.'],
-      ['Best landing day', `<b>${d(best.t)}</b>: ${Math.round(best.sun * 100)} % sunlight and ${Math.round(best.earth * 100)} % Earth in view over the ${this.state.days === 29.53 ? 'lunar-day' : this.state.days + '-day'} stay${season.window ? (inWin ? ', inside the southern-summer window.' : ', outside the southern-summer window — terrain matters more than season here.') : '.'} <button class="link-btn" data-t="${best.t}">Land then</button>`],
+      ['Best landing day', `<b>${d(best.t)}</b>: ${Math.round(best.sun * 100)} % sunlight and ${Math.round(best.earth * 100)} % Earth in view over the ${this.state.days === 29.53 ? 'lunar-day' : this.state.days + '-day'} stay${season.window ? (inWin ? ', inside the southern-summer window.' : ', outside the southern-summer window, so terrain matters more than season here.') : '.'} <button class="link-btn" data-t="${best.t}">Land then</button>`],
       ['Longest runs', `Unbroken sunlight: <b>${site.longestSun.days.toFixed(1)} days</b> from ${d(site.longestSun.t)}. Longest darkness: <b>${site.longestDark.days.toFixed(1)} days</b>${site.longestDark.days > 0 ? ` from ${d(site.longestDark.t)}` : ''}. Longest without Earth: ${site.longestNoEarth.days.toFixed(1)} days.`],
       ['Pattern', pattern],
       ['Drift', `The summer peak arrives earlier each year: ${years.map(y => `${d(y.min.t)} ${y.year}`).join(', ')} (${shifts.map(x => `${x > 0 ? '−' : '+'}${Math.abs(x)} d`).join(', ')}). Recompute for each mission year.`]
     ];
+    $('#season-kv').innerHTML = [
+      ['Season index at landing', `${q.toFixed(0)} % SAOQ`],
+      [`Southern summer ${year}`, season.window ? `${d(season.window.start)} to ${d(season.window.end)}` : 'below 90 % all year'],
+      [`Best start in ${year}`, `${d(best.t)} <button class="link-btn" data-t="${best.t}">land</button>`],
+      ['Longest dark in year', `${site.longestDark.days.toFixed(1)} d`]
+    ].map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+    $('#season-kv').querySelector('.link-btn')?.addEventListener('click', e => { const ep = this.state.epoch; this.state.epoch = new Date(Number(e.target.dataset.t) + (ep.getTime() % DAY)); this.state.followNow = false; this.refresh(); });
     const ul = $('#findings');
     ul.innerHTML = items.map(([k, v]) => `<li><h3>${k}</h3><p>${v}</p></li>`).join('');
     ul.querySelector('.link-btn')?.addEventListener('click', e => { const ep = this.state.epoch; this.state.epoch = new Date(Number(e.target.dataset.t) + (ep.getTime() % DAY)); this.state.followNow = false; this.refresh(); });
@@ -605,7 +720,7 @@ class App {
         const f = metric === 'sun' ? tl.sunFraction : metric === 'earth' ? tl.earthFraction : tl.bothFraction;
         b.style.background = `rgba(${color.join(',')},${(0.08 + 0.92 * f).toFixed(3)})`;
         b.style.color = f > 0.55 ? 'rgba(0,0,0,0.75)' : 'rgba(201,199,219,0.8)';
-        b.title = `${fmtShort(t)} UTC — ${Math.round(f * 100)} % ${metric === 'sun' ? 'sunlight' : metric === 'earth' ? 'Earth in view' : 'both'}`;
+        b.title = `${fmtShort(t)} UTC: ${Math.round(f * 100)} % ${metric === 'sun' ? 'sunlight' : metric === 'earth' ? 'Earth in view' : 'both'}`;
         b.setAttribute('aria-label', b.title);
         k++;
       }
@@ -652,7 +767,7 @@ class App {
         el('td', { class: cls('dark', r.dark), text: fmtDur(r.dark * 3600) }),
         el('td', { class: cls('earth', r.earth), text: pct(r.earth) }),
         el('td', { class: cls('both', r.both), text: pct(r.both) }),
-        el('td', { class: 'num', text: r.ground != null ? `${Math.round(r.ground).toLocaleString('en')} m` : '—' }),
+        el('td', { class: 'num', text: r.ground != null ? `${Math.round(r.ground).toLocaleString('en')} m` : '–' }),
         el('td', {}, el('button', { class: 'row-btn', 'aria-label': `Remove ${r.raw.name}`, onclick: () => { this.pins.splice(r.idx, 1); this.store.set('pins', this.pins); this.renderCompare(); } }, '✕'))
       );
       tb.append(tr);
@@ -755,7 +870,7 @@ class App {
       </section>
       <section>
         <h3>How accurate is it?</h3>
-        <p>Against NASA/JPL Horizons (DE440, 434 samples across 7 sites, 30 days): largest elevation difference 0.014°, mean 0.003°; largest azimuth difference 0.014°. For scale, the Sun's disc is 0.53° wide. Terrain: 240 m/px LOLA grids near the poles (474 m/px elsewhere), so features smaller than a few hundred metres — boulders, small craters right next to a lander — are not resolved.</p>
+        <p>Against NASA/JPL Horizons (DE440, 434 samples across 7 sites, 30 days): largest elevation difference 0.014°, mean 0.003°; largest azimuth difference 0.014°. For scale, the Sun's disc is 0.53° wide. Terrain: 240 m/px LOLA grids near the poles (474 m/px elsewhere), so features smaller than a few hundred metres (boulders, small craters right next to a lander) are not resolved.</p>
       </section>
       <section>
         <h3>Check it yourself, outside this app</h3>

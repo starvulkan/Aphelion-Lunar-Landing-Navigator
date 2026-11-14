@@ -468,7 +468,7 @@ export class Learn {
         <h3>Your current scenario</h3>
         <p>${raw.name}, landing ${app.state.epoch.toISOString().slice(0, 16).replace('T', ' ')} UTC, checked over ${c.days === 29.53 ? 'one lunar day' : `${c.days} days`}.</p>
         <p class="challenge-status ${res.ok ? 'ok' : 'no'}">${res.ok ? 'Mission accomplished. ' : 'Not yet. '}${res.detail}</p>
-        <p class="hint">${done ? 'Already completed — try to find another answer.' : `Hint: ${c.hint}`}</p>
+        <p class="hint">${done ? 'Already completed. Try to find another answer.' : `Hint: ${c.hint}`}</p>
         <div class="lab-controls">
           <button class="btn" id="ch-go">Change the scenario in Mission mode</button>
           <button class="btn ghost" id="ch-check">Check again</button>

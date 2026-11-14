@@ -13,10 +13,10 @@ export const LESSONS = [
       <p>The Moon's spin axis is tilted only <strong>1.54°</strong> from the plane of Earth's orbit around the Sun (Earth's is tilted 23.4°). Stand near a lunar pole and the <span class="sun-word">Sun</span> just skims around the horizon, never rising more than a degree or two.</p>
       <p>That produces two kinds of extreme places only a few kilometres apart:</p>
       <ul>
-        <li><strong>High ridges and crater rims</strong> that stay in sunlight for most of the year — the best spots on the connecting ridge between Shackleton and de Gerlache craters are lit for more than 80 % of the time (LOLA illumination studies).</li>
+        <li><strong>High ridges and crater rims</strong> that stay in sunlight for most of the year; the best spots on the connecting ridge between Shackleton and de Gerlache craters are lit for more than 80 % of the time (LOLA illumination studies).</li>
         <li><strong>Crater floors that have not seen the Sun in billions of years.</strong> These permanently shadowed regions are among the coldest places measured in the Solar System, some below 40 K (−233 °C), cold enough to trap water ice.</li>
       </ul>
-      <div class="fact-box"><p>In 2009 NASA's LCROSS probe crashed into the permanently shadowed floor of Cabeus crater and measured water in the debris plume — about 5.6 % by mass.</p></div>
+      <div class="fact-box"><p>In 2009 NASA's LCROSS probe crashed into the permanently shadowed floor of Cabeus crater and measured water in the debris plume: about 5.6 % by mass.</p></div>
       <p>Sunlight for power, ice for water and rocket fuel, all within driving distance: that is why the Artemis candidate regions and China's Chang'e 7 all cluster within a few degrees of the south pole.</p>`,
     lab: 'pole-pair',
     quiz: [
@@ -35,7 +35,7 @@ export const LESSONS = [
     image: 'graphics/lesson-02-horizon.svg',
     body: `
       <p>Every point in the sky has two numbers. <strong>Azimuth</strong> is the compass direction, measured clockwise from north (east is 90°, south 180°, west 270°). <strong>Elevation</strong> is the angle above the horizon: 0° is level, 90° is straight overhead.</p>
-      <p>On a perfectly smooth Moon, the horizon of someone standing 2 m tall would be only <strong>2.6 km</strong> away — about half the distance on Earth, because the Moon is smaller and curves away faster. Real terrain changes everything: a mountain 100 km away can rise above that line and block the <span class="sun-word">Sun</span>.</p>
+      <p>On a perfectly smooth Moon, the horizon of someone standing 2 m tall would be only <strong>2.6 km</strong> away, about half the distance on Earth, because the Moon is smaller and curves away faster. Real terrain changes everything: a mountain 100 km away can rise above that line and block the <span class="sun-word">Sun</span>.</p>
       <div class="fact-box"><p>There is no air on the Moon, so light travels in straight lines. On Earth, the atmosphere bends sunlight and lets you see the Sun for a couple of minutes after it is geometrically below the horizon. On the Moon, the horizon you calculate is the horizon you get.</p></div>
       <p>In Mission mode, the panorama spreads the full 360° around you. The blue silhouette is the real terrain measured by the laser altimeter LOLA on NASA's Lunar Reconnaissance Orbiter. The pink and light blue tracks are where the Sun and Earth travel during your stay; dashed parts are hidden behind terrain.</p>`,
     lab: 'horizon-dip',
@@ -53,9 +53,9 @@ export const LESSONS = [
     lede: 'The Moon turns once for every trip around Earth, so the Sun takes 29.5 Earth days to come back to the same spot in its sky.',
     image: 'graphics/lesson-03-lunar-day.svg',
     body: `
-      <p>The Moon is <strong>tidally locked</strong>: it spins exactly once per orbit, which is why we always see the same face. Measured against the stars, one turn takes 27.3 days. Measured against the Sun — sunrise to sunrise — it takes <strong>29.53 days</strong>, because the Earth–Moon pair is also moving around the Sun.</p>
+      <p>The Moon is <strong>tidally locked</strong>: it spins exactly once per orbit, which is why we always see the same face. Measured against the stars, one turn takes 27.3 days. Measured against the Sun (sunrise to sunrise), it takes <strong>29.53 days</strong>, because the Earth–Moon pair is also moving around the Sun.</p>
       <p>Near the equator that means roughly two weeks of daylight followed by two weeks of night. The <span class="sun-word">Sun</span> moves only about 12° across the sky per Earth day.</p>
-      <p>Apollo crews landed in the lunar morning, with the Sun low in the east — roughly 5° to 15° up — so long shadows would reveal boulders and craters, and so the surface would not yet be at full midday heat.</p>
+      <p>Apollo crews landed in the lunar morning, with the Sun low in the east (roughly 5° to 15° up), so long shadows would reveal boulders and craters, and so the surface would not yet be at full midday heat.</p>
       <div class="myth-box"><p><strong>Myth:</strong> "The far side is the dark side." The far side gets exactly as much sunlight as the near side. It is only hidden from <em>Earth</em>.</p></div>`,
     lab: 'day-compare',
     quiz: [
@@ -92,8 +92,8 @@ export const LESSONS = [
     body: `
       <p>Because the Moon is tidally locked, <span class="earth-word">Earth</span> hangs in nearly the same place in the sky as seen from any spot on the near side. It does not rise and set every day the way the Sun does.</p>
       <p>It does wobble. This is called <strong>libration</strong>. The Moon's orbit is an ellipse, so its spin and its orbital motion drift in and out of step, swinging Earth up to about <strong>±7.9°</strong> east–west. The Moon's equator is tilted to its orbit, nodding Earth about <strong>±6.7°</strong> north–south over 27.2 days.</p>
-      <p>At the south pole the "average" Earth sits right on the horizon, so the north–south nod lifts it up to about +6.7° and pushes it down to −6.7°. Earth is visible for roughly half of each month — and less if terrain blocks the north. On the far side, Earth is never visible: missions there need a relay satellite such as China's Queqiao.</p>
-      <div class="fact-box"><p>Seen from the Moon, Earth's disc is about 1.9° wide — almost four times as wide as the full Moon looks from Earth.</p></div>`,
+      <p>At the south pole the "average" Earth sits right on the horizon, so the north–south nod lifts it up to about +6.7° and pushes it down to −6.7°. Earth is visible for roughly half of each month, and less if terrain blocks the north. On the far side, Earth is never visible: missions there need a relay satellite such as China's Queqiao.</p>
+      <div class="fact-box"><p>Seen from the Moon, Earth's disc is about 1.9° wide, almost four times as wide as the full Moon looks from Earth.</p></div>`,
     lab: 'earth-month',
     quiz: [
       { q: 'What is libration?', options: ['Earth\'s rotation', 'The apparent wobble of the Moon (and Earth in the lunar sky) caused by its orbit and tilt', 'A type of radio signal', 'Moonquakes'], answer: 1,
@@ -111,7 +111,7 @@ export const LESSONS = [
       <p>Sunlight near the Moon carries about <strong>1,361 W per square metre</strong>. How much of that lands on a panel depends on the angle between the panel and the rays:</p>
       <ul>
         <li>A <strong>flat panel lying on the ground</strong> catches sunlight in proportion to <strong>sin(elevation)</strong>. With the Sun at 1.5°, that is only 2.6 %.</li>
-        <li>A <strong>vertical panel turned to face the Sun</strong> catches light in proportion to <strong>cos(elevation)</strong> — about 100 % when the Sun is low.</li>
+        <li>A <strong>vertical panel turned to face the Sun</strong> catches light in proportion to <strong>cos(elevation)</strong>: about 100 % when the Sun is low.</li>
       </ul>
       <p>That is why polar rovers and landers use vertical solar arrays that rotate to follow the Sun around the horizon, and why NASA is developing tall vertical arrays for a south-pole base. Height helps too: a mast 10 m tall can see over nearby boulders and small ridges.</p>
       <div class="fact-box"><p>Real panels convert roughly 30 % of that light into electricity, and output also drops when the panel is hot. The lab ignores efficiency so you can see the geometry alone.</p></div>`,
@@ -129,13 +129,13 @@ export const LESSONS = [
     image: 'graphics/lesson-07-comms.svg',
     body: `
       <p>A lander sends data <strong>direct to Earth (DTE)</strong> to big dishes such as NASA's Deep Space Network. Radio signals travel in straight lines here, so the antenna needs a clear view of <span class="earth-word">Earth</span> above the local terrain. Light takes about <strong>1.3 seconds</strong> each way.</p>
-      <p>At the pole Earth is low, so a ridge only a few degrees high can block it for days. Mission planners look for sites and dates where Earth stays up during the critical moments — especially landing — and plan around the times when it is down.</p>
+      <p>At the pole Earth is low, so a ridge only a few degrees high can block it for days. Mission planners look for sites and dates where Earth stays up during the critical moments (especially landing) and plan around the times when it is down.</p>
       <p>When DTE is impossible, a <strong>relay satellite</strong> in lunar orbit passes data along. China uses Queqiao and Queqiao-2; ESA and SSTL are building Lunar Pathfinder; NASA's LunaNet is a set of standards so relays from different countries can work together.</p>`,
     lab: null,
     quiz: [
       { q: 'What does DTE stand for?', options: ['Direct-to-Earth', 'Deep Terrain Estimate', 'Daily Transmission Event', 'Dual Telemetry Encoder'], answer: 0, why: 'Direct-to-Earth: the lander talks straight to antennas on Earth.' },
       { q: 'About how long does a radio signal take to travel from the Moon to Earth?', options: ['1.3 milliseconds', '1.3 seconds', '13 seconds', '8 minutes'], answer: 1, why: 'The Moon is about 384,000 km away; at the speed of light that is about 1.3 s.' },
-      { q: 'What can a mission do when Earth is below the terrain horizon?', options: ['Nothing — wait', 'Use a relay satellite in lunar orbit', 'Bounce signals off the Sun', 'Increase transmitter power until it passes through rock'], answer: 1, why: 'Relay satellites (e.g. Queqiao) pass data on when there is no direct line of sight.' }
+      { q: 'What can a mission do when Earth is below the terrain horizon?', options: ['Nothing, just wait', 'Use a relay satellite in lunar orbit', 'Bounce signals off the Sun', 'Increase transmitter power until it passes through rock'], answer: 1, why: 'Relay satellites (e.g. Queqiao) pass data on when there is no direct line of sight.' }
     ]
   },
   {
@@ -161,14 +161,14 @@ export const LESSONS = [
   {
     id: 'planning',
     title: 'Planning a landing',
-    lede: 'Pick the site, pick the day, check the light and the link — then ask what happens if the launch slips.',
+    lede: 'Pick the site, pick the day, check the light and the link, then ask what happens if the launch slips.',
     image: 'graphics/lesson-09-planning.svg',
     body: `
       <p>Mission planners ask the same questions this app answers:</p>
       <ul>
         <li>Is the <span class="sun-word">Sun</span> above the terrain at touchdown, and how long until it sets?</li>
         <li>Is <span class="earth-word">Earth</span> in view during descent, so engineers can watch the landing live?</li>
-        <li>Over the whole surface stay, how many hours of power and of radio contact will there be — and how long is the longest dark spell the batteries must survive?</li>
+        <li>Over the whole surface stay, how many hours of power and of radio contact will there be, and how long is the longest dark spell the batteries must survive?</li>
       </ul>
       <p>Rockets do not always launch on time. A one-day slip moves the Sun about 12° around the polar horizon, which can put it behind a ridge for the whole mission. That is why the Mission view shows "If the landing slips" and a grid of the best landing days.</p>
       <p>Your turn: the Missions on the left ask you to find real scenarios in Mission mode. The app checks your answer with the same calculations.</p>`,
@@ -207,12 +207,12 @@ export const CHALLENGES = [
   {
     id: 'lights-on', title: 'Keep the lights on', badge: 'graphics/badge-lights-on.svg', xp: 60,
     task: 'Find a south-polar site (south of 80°S) and a landing time where, over a 7-day stay, the Sun is up at least 95 % of the time AND Earth is in view at least 50 % of the time.',
-    hint: 'Try high ground — Malapert Massif or the connecting ridge — then use the "Best landing days" grid.',
+    hint: 'Try high ground (Malapert Massif or the connecting ridge), then use the "Best landing days" grid.',
     days: 7,
     check: ({ site, tl }) => {
       const s = tl.sunFraction * 100, e = tl.earthFraction * 100;
       const ok = site.lat <= -80 && s >= 95 && e >= 50;
-      return { ok, detail: `${site.name}: sunlight ${s.toFixed(0)} %, Earth in view ${e.toFixed(0)} % over 7 days${site.lat > -80 ? ' — this site is north of 80°S' : ''}.` };
+      return { ok, detail: `${site.name}: sunlight ${s.toFixed(0)} %, Earth in view ${e.toFixed(0)} % over 7 days${site.lat > -80 ? '. This site is north of 80°S' : ''}.` };
     }
   },
   {
@@ -239,7 +239,7 @@ export const CHALLENGES = [
       const later = eph.rawState(site, new Date(epoch.getTime() + 3600000)).solar.elevation;
       const apollo = /^a1\d$/.test(site.id);
       const ok = apollo && now >= 5 && now <= 15 && later > now;
-      return { ok, detail: `${site.name}: Sun at ${now.toFixed(1)}° and ${later > now ? 'rising' : 'setting'}${apollo ? '' : ' — not an Apollo site'}.` };
+      return { ok, detail: `${site.name}: Sun at ${now.toFixed(1)}° and ${later > now ? 'rising' : 'setting'}${apollo ? '' : ', but not an Apollo site'}.` };
     }
   }
 ];

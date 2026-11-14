@@ -67,32 +67,85 @@
 
   <!-- ===================== Mission mode ===================== -->
   <main id="main" class="mission" data-view="mission">
-    <section class="pano" aria-label="Site views">
-      <div class="view-tabs" role="tablist" aria-label="View">
-        <button role="tab" data-view="site3d" aria-selected="true">3D terrain</button>
-        <button role="tab" data-view="pano" aria-selected="false">Panorama</button>
-        <button role="tab" data-view="globe" aria-selected="false">Moon globe</button>
-      </div>
-      <div class="stage">
-        <canvas id="scene-canvas" aria-label="3D view. Drag to orbit."></canvas>
-        <canvas id="pano-canvas" aria-describedby="pano-desc" hidden></canvas>
-        <div class="scene-tools" id="scene-tools">
-          <label>Relief <select id="exag"><option value="1">true scale</option><option value="2" selected>×2</option><option value="4">×4</option></select></label>
-          <button id="zoom-in" aria-label="Zoom in">+</button>
-          <button id="zoom-out" aria-label="Zoom out">−</button>
-          <button id="reset-view">Reset view</button>
+    <div class="orbs edu-only" aria-hidden="true"><i></i><i></i><i></i></div>
+
+    <div class="console">
+      <section class="pano" aria-label="Site views">
+        <div class="stage-top">
+          <div class="level" role="group" aria-label="How much detail to show">
+            <button data-level="pro" aria-pressed="true">Professional</button>
+            <button data-level="edu" aria-pressed="false">Educational</button>
+          </div>
+          <div class="view-tabs" role="tablist" aria-label="View">
+            <button role="tab" data-view="site3d" aria-selected="true">3D terrain</button>
+            <button role="tab" data-view="pano" aria-selected="false">Panorama</button>
+            <button role="tab" data-view="globe" aria-selected="false">Moon globe</button>
+          </div>
         </div>
-        <div class="scene-tags" id="scene-tags" aria-hidden="true"></div>
-        <p class="scene-msg" id="scene-msg" hidden></p>
-      </div>
-      <p id="pano-desc" class="sr-only">A 360 degree view from the landing site. The terrain silhouette comes from LOLA laser altimetry. The pink track is the Sun's path and the light blue track is Earth's path during the surface stay.</p>
-      <div class="pano-key">
-        <span class="key sun">Sun</span>
-        <span class="key earth">Earth</span>
-        <span class="key terrain">LOLA terrain</span>
-        <span class="pano-note" id="pano-note"></span>
-      </div>
-    </section>
+        <div class="stage">
+          <canvas id="scene-canvas" aria-label="3D view. Drag to orbit."></canvas>
+          <canvas id="pano-canvas" aria-describedby="pano-desc" hidden></canvas>
+          <div class="pano-key">
+            <span class="key sun">Sun</span>
+            <span class="key earth">Earth</span>
+            <span class="key terrain">LOLA terrain</span>
+            <span class="pano-note" id="pano-note"></span>
+          </div>
+          <div class="scene-tools" id="scene-tools">
+            <label>Relief <select id="exag"><option value="1">true scale</option><option value="2" selected>×2</option><option value="4">×4</option></select></label>
+            <button id="zoom-in" aria-label="Zoom in">+</button>
+            <button id="zoom-out" aria-label="Zoom out">−</button>
+            <button id="reset-view">Reset view</button>
+          </div>
+          <div class="scene-tags" id="scene-tags" aria-hidden="true"></div>
+          <p class="scene-msg" id="scene-msg" hidden></p>
+        </div>
+        <p id="pano-desc" class="sr-only">A 360 degree view from the landing site. The terrain silhouette comes from LOLA laser altimetry. The pink track is the Sun's path and the light blue track is Earth's path during the surface stay.</p>
+      </section>
+
+      <!-- Professional: everything that matters for the selected scenario, in one column beside the view -->
+      <aside class="rail pro-only" aria-label="Scenario summary">
+        <section class="panel scoreband" aria-label="Overall score">
+          <div class="score-main">
+            <p class="score-num" id="score-num">–</p>
+            <div>
+              <p class="score-grade" id="score-grade"></p>
+              <p class="score-of">out of 100</p>
+            </div>
+          </div>
+          <p class="score-verdict" id="score-verdict"></p>
+          <dl class="factors" id="score-factors"></dl>
+          <label class="prio">Weighting
+            <select id="priority"><option value="balanced">Balanced</option><option value="power">Power first</option><option value="comms">Comms first</option></select>
+          </label>
+        </section>
+
+        <section class="panel now" aria-label="Sun and Earth at the cursor time">
+          <h2 class="panel-h">At <output id="now-time"></output></h2>
+          <table class="now-table">
+            <thead><tr><th></th><th>Elevation</th><th>Azimuth</th><th>Terrain</th><th>Clearance</th></tr></thead>
+            <tbody>
+              <tr class="sun"><th scope="row"><i class="bdot"></i>Sun</th><td id="sun-el">–</td><td id="sun-az">–</td><td id="sun-hz">–</td><td id="sun-clr">–</td></tr>
+              <tr class="earth"><th scope="row"><i class="bdot"></i>Earth</th><td id="earth-el">–</td><td id="earth-az">–</td><td id="earth-hz">–</td><td id="earth-clr">–</td></tr>
+            </tbody>
+          </table>
+          <ul class="next-list">
+            <li class="sun" id="sun-next"></li>
+            <li class="earth" id="earth-next"></li>
+          </ul>
+        </section>
+
+        <section class="panel stay" aria-label="Over the surface stay">
+          <h2 class="panel-h">Over the <output id="stay-len"></output> stay</h2>
+          <dl class="bars">
+            <div><dt>Sunlight</dt><dd><span class="bar sun"><i id="bar-sun"></i></span><b id="pct-sun">–</b></dd></div>
+            <div><dt>Earth in view</dt><dd><span class="bar earth"><i id="bar-earth"></i></span><b id="pct-earth">–</b></dd></div>
+            <div><dt>Both at once</dt><dd><span class="bar both"><i id="bar-both"></i></span><b id="pct-both">–</b></dd></div>
+          </dl>
+          <dl class="kv" id="stay-kv"></dl>
+        </section>
+      </aside>
+    </div>
 
     <section class="track" aria-label="Surface stay timeline">
       <button class="play" id="play-btn" aria-label="Play">
@@ -102,68 +155,37 @@
       <output class="cursor-time" id="cursor-time"></output>
     </section>
 
-    <section class="scoreband" aria-label="Overall score">
-      <div class="score-main">
-        <p class="score-label">Overall score</p>
-        <p class="score-num" id="score-num">–</p>
-        <p class="score-grade" id="score-grade"></p>
-      </div>
-      <div class="score-mid">
-        <p class="score-verdict" id="score-verdict"></p>
-        <dl class="bars score-factors" id="score-factors"></dl>
-      </div>
-      <div class="score-side">
-        <div class="level" role="group" aria-label="How much detail to show">
-          <button data-level="pro" aria-pressed="true">Professional</button>
-          <button data-level="edu" aria-pressed="false">Educational</button>
-        </div>
-        <p class="level-hint" id="level-hint"></p>
-        <label class="pro-only prio">Priority
-          <select id="priority"><option value="balanced">Balanced</option><option value="power">Power first</option><option value="comms">Comms first</option></select>
-        </label>
-      </div>
-    </section>
-
-    <section class="edu-panel edu-only" id="edu-panel" aria-label="What this means"></section>
-
-    <section class="readouts pro-only" aria-label="Current conditions">
-      <div class="ro sun">
-        <h2>Sun</h2>
-        <p class="ro-big" id="sun-el">—</p>
-        <p class="ro-sub" id="sun-sub"></p>
-        <p class="ro-next" id="sun-next"></p>
-      </div>
-      <div class="ro earth">
-        <h2>Earth</h2>
-        <p class="ro-big" id="earth-el">—</p>
-        <p class="ro-sub" id="earth-sub"></p>
-        <p class="ro-next" id="earth-next"></p>
-      </div>
-      <div class="ro stay">
-        <h2>Over the stay</h2>
-        <dl class="bars">
-          <div><dt>Sunlight</dt><dd><span class="bar sun"><i id="bar-sun"></i></span><b id="pct-sun">—</b></dd></div>
-          <div><dt>Earth in view</dt><dd><span class="bar earth"><i id="bar-earth"></i></span><b id="pct-earth">—</b></dd></div>
-          <div><dt>Both at once</dt><dd><span class="bar both"><i id="bar-both"></i></span><b id="pct-both">—</b></dd></div>
-        </dl>
-        <p class="ro-sub" id="dark-gap"></p>
-      </div>
-      <div class="ro slip">
-        <h2>If the landing slips</h2>
-        <table class="slip-table" id="slip-table"><tbody></tbody></table>
-      </div>
-    </section>
+    <!-- Educational: the same scenario as a short, friendly report -->
+    <section class="edu edu-only" id="edu-panel" aria-label="Landing report"></section>
 
     <section class="lower">
-      <figure class="sky pro-only">
+      <figure class="panel sky pro-only">
+        <h2 class="panel-h">Sky dome</h2>
         <canvas id="sky-canvas" aria-label="Sky dome: zenith in the centre, horizon at the rim, north at the top"></canvas>
-        <figcaption>Sky dome, north up. The shaded rim is the terrain.</figcaption>
+        <figcaption>North up. Zenith in the centre, the shaded rim is the terrain.</figcaption>
       </figure>
 
-      <div class="sweep">
-        <div class="section-head">
-          <h2>Best landing days</h2>
-          <p>Each square is a landing at this time of day on a later date, scored over the chosen surface stay.</p>
+      <div class="panel slip pro-only">
+        <h2 class="panel-h">If the landing slips</h2>
+        <table class="slip-table" id="slip-table"><tbody></tbody></table>
+        <dl class="kv" id="season-kv"></dl>
+      </div>
+
+      <aside class="panel facts pro-only" aria-label="Site details">
+        <h2 class="panel-h" id="facts-title">Site</h2>
+        <dl id="facts" class="kv"></dl>
+        <p class="facts-note" id="facts-note"></p>
+        <div class="facts-actions">
+          <button class="btn" id="pin-btn">Pin to comparison</button>
+          <a class="btn ghost" id="horizons-link" target="_blank" rel="noopener">JPL Horizons</a>
+          <button class="btn ghost" id="share-btn">Copy link</button>
+        </div>
+      </aside>
+
+      <div class="panel sweep">
+        <div class="sweep-head">
+          <h2 class="panel-h"><span class="pro-only">Landing date sweep</span><span class="edu-only">Pick your landing day</span></h2>
+          <p class="sweep-sub"><span class="pro-only">Same time of day, next 45 days, scored over the chosen stay.</span><span class="edu-only">Each square is a day you could land. The brighter it is, the better that day is for the thing you choose below.</span></p>
         </div>
         <div class="sweep-legend">
           <label><input type="radio" name="sweep-metric" value="sun" checked> Sunlight</label>
@@ -173,17 +195,6 @@
         <div class="sweep-grid" id="sweep-grid" role="grid" aria-label="Landing date sweep"></div>
         <p class="sweep-hint" id="sweep-hint">Select a square to move the landing to that date.</p>
       </div>
-
-      <aside class="facts pro-only" aria-label="Site details">
-        <h2 id="facts-title">Site</h2>
-        <dl id="facts"></dl>
-        <p class="facts-note" id="facts-note"></p>
-        <div class="facts-actions">
-          <button class="btn" id="pin-btn">Pin to comparison</button>
-          <a class="btn ghost" id="horizons-link" target="_blank" rel="noopener">Check in JPL Horizons</a>
-          <button class="btn ghost" id="share-btn">Copy link</button>
-        </div>
-      </aside>
     </section>
 
     <section class="season pro-only" aria-label="Season and patterns">
@@ -233,15 +244,6 @@
 
     <footer class="provenance" id="provenance"></footer>
   </main>
-
-  <!-- ===================== Learn mode ===================== -->
-  <svg class="defs" width="0" height="0" aria-hidden="true">
-    <filter id="liquid" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
-      <feTurbulence type="fractalNoise" baseFrequency="0.008 0.012" numOctaves="2" seed="7" result="n"/>
-      <feGaussianBlur in="n" stdDeviation="2" result="nb"/>
-      <feDisplacementMap in="SourceGraphic" in2="nb" scale="38" xChannelSelector="R" yChannelSelector="G"/>
-    </filter>
-  </svg>
   <main class="learn" data-view="learn" hidden>
     <div class="orbs" aria-hidden="true"><i></i><i></i><i></i></div>
     <!-- Hub -->
