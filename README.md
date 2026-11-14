@@ -1,8 +1,3 @@
-<!-- ======================================================================
-     Aphelion · Lunar Landing Navigator
-     Placeholder README for the team's own version. Graphics in
-     graphics/readme/ are AI-generated placeholders and are watermarked.
-     ====================================================================== -->
 
 <p align="center">
   <img src="graphics/readme/banner.svg" alt="Aphelion. Land where the Sun never sets. The real terrain horizon of the Shackleton–de Gerlache ridge, with the Sun skimming it and Earth bobbing above it over one month." width="100%">
@@ -24,18 +19,6 @@
 <h3 align="center"><em>At the Moon's south pole the Sun never climbs more than a couple of degrees.<br>One ridge gets light for months. The crater beside it has been dark for billions of years.<br>Aphelion shows you which is which, for any place and any day.</em></h3>
 
 <br>
-
-<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
-
-##  Contents
-
-| | | |
-|---|---|---|
-| [The challenge](#-the-challenge) | [What we built](#-what-we-built-high-level-summary) | [Tour](#-a-quick-tour) |
-| [How it works](#-how-it-works) | [The overall score](#-the-overall-score) | [NASA data](#-nasa-data) |
-| [Other data and tools](#-space-agency-partner-and-other-data) | [Is it right?](#-is-it-right-validity) | [Judging criteria](#-how-it-meets-the-judging-criteria) |
-| [Use of AI](#-use-of-artificial-intelligence) | [Run it](#-run-it-yourself) | [Project layout](#-project-layout) |
-| [Team](#-team) | [Credits and licence](#-credits-and-licence) |
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
