@@ -33,7 +33,7 @@ The challenge asked for an intuitive web app that lets **mission planners, educa
 
 ##  What we built (high-level summary)
 
-**Aphelion** is a free web app that runs entirely in the browser. Pick a landing site (or type any coordinates), pick a date and a surface stay, and it shows:
+**Aphelion** runs entirely in the browser with zero server setup. Just drop in coordinates (or pick a curated site), set your dates, and the app instantly calculates:
 
 - **Where the Sun and Earth are**, against the **real terrain horizon** of that exact spot, built from NASA's Lunar Orbiter Laser Altimeter (LOLA) data.
 - **How much power and radio contact the stay gets**: sunlight %, Earth-in-view %, both at once, the longest dark spell, and the time to the next sunset or Earthset.
@@ -175,7 +175,7 @@ Do it yourself, step by step, with JPL Horizons, LROC QuickMap and Moon Trek: **
 
 ##  How it meets the judging criteria
 
-NASA Space Apps judges projects on five criteria. This is where to look for each:
+Here is where you can find how Aphelion addresses each of the five NASA Space Apps judging criteria:
 
 | Criterion | What judges look for | Where Aphelion answers it |
 |---|---|---|
