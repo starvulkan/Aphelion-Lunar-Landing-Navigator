@@ -22,7 +22,7 @@ const dir = join(root, 'js');
 for (const f of readdirSync(dir).filter(f => f.endsWith('.js'))) {
   const p = join(dir, f);
   const before = readFileSync(p, 'utf8');
-  const after = swap(before, /((?:from |import\()'\.\/[\w-]+\.js)(?:\?v=[\w-]+)?(')/g);
+  const after = swap(before, /((?:from |import\()'\.\/[\w.-]+?\.js)(?:\?v=[\w-]+)?(')/g);
   if (after !== before) writeFileSync(p, after);
 }
 console.log(`stamped v=${stamp}`);

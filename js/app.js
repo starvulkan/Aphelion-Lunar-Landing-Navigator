@@ -1,14 +1,16 @@
 /**
  * Aphelion — app shell and Mission mode.
  */
-import { EphemerisCalculator } from './ephemeris.js?v=202611150026';
-import { TerrainService } from './terrain.js?v=202611150026';
-import { SITES, CATEGORIES, searchSites } from './sites.js?v=202611150026';
-import { Panorama, Track, SeasonChart, drawSky, fmtDeg } from './viz.js?v=202611150026';
-import { seasonYear, siteYear, correlation, saoq } from './season.js?v=202611150026';
-import { landingScore, slopeAtCentre, PRIORITIES } from './score.js?v=202611150026';
-import { Store } from './store.js?v=202611150026';
-import { Learn } from './learn.js?v=202611150026';
+import { EphemerisCalculator } from './ephemeris.js?v=202611150104';
+import { TerrainService } from './terrain.js?v=202611150104';
+import { SITES, CATEGORIES, searchSites } from './sites.js?v=202611150104';
+import { Panorama, Track, SeasonChart, drawSky, fmtDeg } from './viz.js?v=202611150104';
+import { seasonYear, siteYear, correlation, saoq } from './season.js?v=202611150104';
+import { landingScore, slopeAtCentre, PRIORITIES } from './score.js?v=202611150104';
+import { Store } from './store.js?v=202611150104';
+import { Learn } from './learn.js?v=202611150104';
+import { Tour } from './tour.js?v=202611150104';
+import { setLang, getLang } from './i18n.js?v=202611150104';
 
 const DAY = 86400000;
 const OBSERVER_M = 2;
@@ -92,8 +94,13 @@ class App {
     await this.terrain.load();
     this.terrain.loadPatches().then(ok => { if (ok && this.result) { this._listScores = null; this.renderScore(this.evaluateFromTimeline(this.result.timeline)); this.renderCompare(); } });
     this.initScene();
+    // Language for Learn mode and the tour: saved choice, else the browser's language.
+    setLang(this.store.get('lang', (navigator.language || 'en').toLowerCase().startsWith('es') ? 'es' : 'en'));
+    this.bindLang();
     this.learn = new Learn(this);
     this.learn.init();
+    this.tour = new Tour(this);
+    this.tour.init();
     this.setMode(this.state.mode || 'mission', false);
     this.refresh();
     setInterval(() => {
@@ -378,6 +385,12 @@ class App {
     this.setLevel(this.state.level, false);
   }
 
+  bindLang() {
+    const sync = () => document.querySelectorAll('.lang button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === getLang())));
+    document.querySelectorAll('.lang button').forEach(b => b.addEventListener('click', () => { this.store.set('lang', b.dataset.lang); setLang(b.dataset.lang); sync(); }));
+    sync();
+  }
+
   setLevel(level, redraw = true) {
     this.state.level = level;
     this.store.set('level', level);
@@ -557,7 +570,7 @@ class App {
 
   async initScene() {
     try {
-      const mod = await import('./scene3d.js?v=202611150026');
+      const mod = await import('./scene3d.js?v=202611150104');
       if (!mod.webglAvailable()) throw new Error('WebGL is not available in this browser');
       this.scene3d = new mod.Scene3D($('#scene-canvas'));
       this.scene3d.setExaggeration(Number($('#exag').value));

@@ -225,6 +225,9 @@ js/
   scene3d.js             3D terrain, Moon globe, Earth and Sun (three.js)
   viz.js                 panorama, timeline, sky dome, charts
   learn.js · lessons.js  Learn mode: lessons, labs, quizzes, missions, XP, badges
+  lessons.es.js          Learn mode content in Spanish
+  i18n.js                English/Spanish interface text for Learn mode and the tour
+  tour.js                guided tour of the app
   sites.js               36 curated sites, each with a source
   store.js               saves progress in the browser
 tools/

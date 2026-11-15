@@ -1,8 +1,11 @@
 /**
  * Learn-mode content. Every number here is either a textbook constant or is
  * computed live by the same engine the Mission mode uses. References are in
- * DATA_SOURCES.md (section "Lesson facts").
+ * DATA_SOURCES.md (section "Lesson facts"). Spanish text lives in lessons.es.js;
+ * content(lang) merges it over these entries by id.
  */
+import { t } from './i18n.js?v=202611150104';
+import { LESSONS_ES, CHALLENGES_ES, RANKS_ES, BADGES_ES } from './lessons.es.js?v=202611150104';
 export const LESSONS = [
   {
     id: 'why-pole',
@@ -212,7 +215,7 @@ export const CHALLENGES = [
     check: ({ site, tl }) => {
       const s = tl.sunFraction * 100, e = tl.earthFraction * 100;
       const ok = site.lat <= -80 && s >= 95 && e >= 50;
-      return { ok, detail: `${site.name}: sunlight ${s.toFixed(0)} %, Earth in view ${e.toFixed(0)} % over 7 days${site.lat > -80 ? '. This site is north of 80°S' : ''}.` };
+      return { ok, detail: `${t('ch.lightsOn', { site: site.name, s: s.toFixed(0), e: e.toFixed(0) })}${site.lat > -80 ? t('ch.north80') : ''}.` };
     }
   },
   {
@@ -220,14 +223,14 @@ export const CHALLENGES = [
     task: 'Find any site where Earth is never in view during a whole lunar day (29.5 days).',
     hint: 'Where on the Moon does Earth never rise?',
     days: 29.53,
-    check: ({ site, tl }) => ({ ok: tl.earthFraction === 0, detail: `${site.name}: Earth in view ${(tl.earthFraction * 100).toFixed(1)} % of a lunar day.` })
+    check: ({ site, tl }) => ({ ok: tl.earthFraction === 0, detail: t('ch.blackout', { site: site.name, e: (tl.earthFraction * 100).toFixed(1) }) })
   },
   {
     id: 'eternal-night', title: 'Eternal night', badge: 'graphics/badge-eternal-night.png', xp: 50,
     task: 'Find a site where the Sun never clears the terrain during a whole lunar day.',
     hint: 'Look inside a polar crater.',
     days: 29.53,
-    check: ({ site, tl }) => ({ ok: tl.sunFraction === 0, detail: `${site.name}: sunlight ${(tl.sunFraction * 100).toFixed(1)} % of a lunar day.` })
+    check: ({ site, tl }) => ({ ok: tl.sunFraction === 0, detail: t('ch.night', { site: site.name, s: (tl.sunFraction * 100).toFixed(1) }) })
   },
   {
     id: 'apollo-morning', title: 'Apollo morning', badge: 'graphics/badge-apollo-morning.png', xp: 50,
@@ -239,7 +242,7 @@ export const CHALLENGES = [
       const later = eph.rawState(site, new Date(epoch.getTime() + 3600000)).solar.elevation;
       const apollo = /^a1\d$/.test(site.id);
       const ok = apollo && now >= 5 && now <= 15 && later > now;
-      return { ok, detail: `${site.name}: Sun at ${now.toFixed(1)}° and ${later > now ? 'rising' : 'setting'}${apollo ? '' : ', but not an Apollo site'}.` };
+      return { ok, detail: `${t('ch.apollo', { site: site.name, el: now.toFixed(1), dir: t(later > now ? 'ch.rising' : 'ch.setting') })}${apollo ? '' : t('ch.notApollo')}.` };
     }
   }
 ];
@@ -261,3 +264,17 @@ export const BADGES = [
   { id: 'eternal-night', name: 'Never Ending Night', img: 'graphics/badge-eternal-night.png', how: 'Mission: Eternal night' },
   { id: 'apollo-morning', name: 'Mornings', img: 'graphics/badge-apollo-morning.png', how: 'Mission: Apollo morning' }
 ];
+
+/** Lessons, missions, ranks and badges in the requested language (structure, answers and checks are shared). */
+export function content(lang) {
+  if (lang !== 'es') return { LESSONS, CHALLENGES, RANKS, BADGES };
+  return {
+    LESSONS: LESSONS.map(l => {
+      const e = LESSONS_ES[l.id]; if (!e) return l;
+      return { ...l, title: e.title, lede: e.lede, body: e.body, quiz: l.quiz.map((q, i) => ({ ...q, ...e.quiz[i] })) };
+    }),
+    CHALLENGES: CHALLENGES.map(c => ({ ...c, ...(CHALLENGES_ES[c.id] || {}) })),
+    RANKS: RANKS.map((r, i) => ({ ...r, title: RANKS_ES[i] || r.title })),
+    BADGES: BADGES.map(b => ({ ...b, how: BADGES_ES[b.id] || b.how }))
+  };
+}

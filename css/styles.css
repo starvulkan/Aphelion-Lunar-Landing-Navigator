@@ -816,3 +816,39 @@ body[data-level="edu"] .provenance { position: relative; z-index: 1; }
   body[data-level="edu"] .lower { padding: 0 var(--s3); }
 }
 .stage > canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* ======================================================= language + tour */
+.lang { display: flex; padding: 3px; border-radius: 999px; border: 1px solid var(--line-strong); }
+.lang button { border: 0; background: none; color: var(--mist-2); font-size: 12px; font-weight: 600; padding: 5px 9px; border-radius: 999px; cursor: pointer; letter-spacing: 0.02em; }
+.lang button[aria-pressed="true"] { background: #fff; color: #000; }
+.tour-btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line-strong); background: none; cursor: pointer; font-size: 13px; color: var(--mist); }
+.tour-btn:hover, .lang button:hover:not([aria-pressed="true"]) { color: #fff; border-color: var(--ice); }
+.tour-btn svg { color: var(--rose); }
+
+.tour { position: fixed; inset: 0; z-index: 200; }
+.tour-spot { position: fixed; border-radius: 16px; pointer-events: none; box-shadow: 0 0 0 200vmax rgb(0 0 0 / 0.66), 0 0 0 2px var(--ice), 0 0 28px 4px rgb(191 237 248 / 0.35); transition: left 380ms cubic-bezier(.2,.8,.2,1), top 380ms cubic-bezier(.2,.8,.2,1), width 380ms cubic-bezier(.2,.8,.2,1), height 380ms cubic-bezier(.2,.8,.2,1); }
+.tour-card { position: fixed; border-radius: 22px; padding: var(--s4) var(--s5) var(--s4); background: linear-gradient(140deg, rgb(67 80 206 / 0.55), rgb(10 10 24 / 0.86) 55%); -webkit-backdrop-filter: blur(22px) saturate(170%); backdrop-filter: blur(22px) saturate(170%); border: 1px solid rgb(255 255 255 / 0.18); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.3), 0 30px 80px -20px rgb(0 0 0 / 0.9); transition: left 380ms cubic-bezier(.2,.8,.2,1), top 380ms cubic-bezier(.2,.8,.2,1); outline: none; }
+.tour-bar { height: 3px; border-radius: 2px; background: rgb(255 255 255 / 0.12); overflow: hidden; margin-bottom: var(--s3); }
+.tour-bar i { display: block; height: 100%; background: linear-gradient(90deg, var(--rose), var(--ice)); transition: width 380ms ease; }
+.tour-count { font-size: 12px; color: var(--mist-2); font-variant-numeric: tabular-nums; }
+.tour-card h2 { font-size: 24px; font-weight: 800; line-height: 1.05; letter-spacing: -0.01em; color: #fff; margin: 4px 0 var(--s2); font-variation-settings: "wdth" 108; }
+.tour-text { font-size: 15px; line-height: 1.5; color: var(--mist); }
+.tour-actions { display: flex; align-items: center; gap: 8px; margin-top: var(--s4); }
+.tour-actions > span { flex: 1; }
+.tour-actions .btn { padding: 8px 14px; font-size: 13px; }
+.tour-skip { border: 0; background: none; color: var(--mist-2); font-size: 13px; cursor: pointer; padding: 6px 2px; text-decoration: underline; text-underline-offset: 3px; }
+.tour-skip:hover { color: #fff; }
+.tour-invite { position: fixed; z-index: 150; left: 20px; bottom: 20px; max-width: 340px; padding: var(--s4); border-radius: 20px; background: linear-gradient(140deg, rgb(67 80 206 / 0.6), rgb(10 10 24 / 0.88) 60%); -webkit-backdrop-filter: blur(20px); backdrop-filter: blur(20px); border: 1px solid rgb(255 255 255 / 0.18); box-shadow: 0 24px 60px -20px rgb(0 0 0 / 0.9); animation: invite-in 500ms cubic-bezier(.2,.8,.2,1); }
+.tour-invite p { font-size: 15px; color: #fff; margin-bottom: var(--s3); }
+.tour-invite div { display: flex; gap: 8px; }
+.tour-invite .btn { padding: 8px 14px; font-size: 13px; }
+@keyframes invite-in { from { opacity: 0; transform: translateY(16px); } }
+@media (prefers-reduced-motion: reduce) { .tour-spot, .tour-card, .tour-bar i { transition: none; } .tour-invite { animation: none; } }
+@media (max-width: 1600px) { .tour-btn span { display: none; } .tour-btn { padding: 0 9px; } }
+@media (max-width: 760px) { .tour-invite { left: 12px; right: 12px; max-width: none; } }
+/* keep the top bar on one line on laptop screens now that it also holds language and tour */
+@media (max-width: 1600px) {
+  .topbar { gap: 12px; }
+  .window > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+}
+@media (max-width: 1500px) { .brand-name { display: none; } }
