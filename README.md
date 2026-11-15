@@ -11,6 +11,7 @@
 <p align="center">
   <img alt="NASA Space Apps 2026" src="https://img.shields.io/badge/NASA_Space_Apps-2026_·_The_Next_Frontier-c9c7db?style=flat-square&labelColor=000000">
   <img alt="Local event" src="https://img.shields.io/badge/local_event-Tegucigalpa,_Honduras-c9c7db?style=flat-square&labelColor=000000">
+  <img alt="Languages: English and Spanish" src="https://img.shields.io/badge/languages-English_·_Español-c9c7db?style=flat-square&labelColor=000000">
   <img alt="Licence" src="https://img.shields.io/badge/licence-Apache_2.0-c9c7db?style=flat-square&labelColor=000000">
 </p>
 
@@ -47,10 +48,14 @@ It has two modes for two audiences:
 |---|---|---|
 | **For** | Planners, engineers, judges in a hurry | Students, teachers, the curious public |
 | **Feels like** | A flight console: every number on one screen | A playful course: big type, glass cards, missions |
-| **Inside** | 3D terrain with real shadows, 360° panorama, Moon globe with Earth and Sun, timeline, sky dome, slip table, season chart, comparison table, CSV export | 10 short lessons with live labs, quizzes, XP, ranks, badges, and 4 missions checked against your real scenario |
+| **Inside** | 3D terrain with real shadows, 360° panorama, Moon globe with Earth and Sun, timeline, sky dome, slip table, season chart, comparison table, CSV export | 10 short lessons with live labs, quizzes, XP, ranks, badges, and 4 missions checked against your real scenario, in English or Spanish |
 | **Levels** | **Professional** (all the data) or **Educational** (the same scenario as a friendly landing report) | |
 
 **Why it matters:** the same few kilometres can mean months of light or permanent darkness. Making that visible in seconds helps planners screen options, and helps everyone else understand why the Moon's south pole is so hard, and so worth it.
+
+**New here?** Press the **Tour** button (the star in the top bar) for a one-minute guided tour. A spotlight moves through every part of the app while a short card explains it, from picking a site to earning badges. First-time visitors get a small invitation to take it.
+
+**¿Hablas español?** Switch the top bar to **ES** and Learn mode and the tour change to Spanish: all ten lessons, quizzes, labs and missions, with the same numbers and answers as the English version. It starts in Spanish automatically when your browser is set to Spanish, ready for classrooms in Honduras.
 
 **Fun Fact!** The UI for Learn Mode and Educational Mode in Mission Mode takes inspiration from UI elements and animations from Lando Norris's official website! https://landonorris.com/
 
@@ -74,6 +79,10 @@ It has two modes for two audiences:
   <tr>
     <td><img src="graphics/readme/learn-hub.jpg" alt="Learn mode: lesson cards with the team's illustrations"><br><sub><b>Learn mode.</b> A course in ten short lessons, each with its own illustration by the team.</sub></td>
     <td><img src="graphics/readme/missions.jpg" alt="Learn mode missions with the team's round badges"><br><sub><b>Missions and badges.</b> Four missions checked against your real scenario, each with a badge designed by the team.</sub></td>
+  </tr>
+  <tr>
+    <td><img src="graphics/readme/tour.jpg" alt="The guided tour: a spotlight on the overall score with a card explaining it"><br><sub><b>Guided tour.</b> A one-minute walk through the whole app, one spotlight at a time.</sub></td>
+    <td><img src="graphics/readme/learn-es.jpg" alt="A lesson page in Spanish: Por qué todos quieren ir al polo sur"><br><sub><b>En español.</b> Learn mode and the tour in Spanish, with the same science as the English version.</sub></td>
   </tr>
   <tr>
     <td colspan="2"><img src="graphics/readme/lesson.jpg" alt="A lesson page with text, the team's illustration and the lesson list"><br><sub><b>Lessons with live labs.</b> Each lab runs on the same engine and terrain as Mission mode.</sub></td>
@@ -183,11 +192,11 @@ Here is where you can find how Aphelion addresses each of the five NASA Space Ap
 
 | Criterion | What judges look for | Where Aphelion answers it |
 |---|---|---|
-| **Impact** | Real-world value | Screens landing sites and dates in seconds instead of hours; Learn mode turns the same science into a free course for schools |
+| **Impact** | Real-world value | Screens landing sites and dates in seconds instead of hours; Learn mode turns the same science into a free course for schools, in English and Spanish |
 | **Creativity** | Originality | One engine, two audiences: a flight-console view and a game-like landing report of the *same* scenario; the season index from our own report built into a live year chart; Moon, Earth and Sun in true directions |
 | **Validity** | Technical quality and feasibility | Real LOLA terrain, ephemeris checked against JPL Horizons on every deploy, every number cited, a self-check guide, no server to maintain |
 | **Relevance** | Fit with the challenge and NASA's mission | Every item in the brief: curated and custom sites, side-by-side comparison, dates and seasons, time to sunset and Earthset, Sun and Earth vs the horizon, 2D and 3D views, timeline animation, beginner and expert levels. Built around Artemis south-pole regions |
-| **Presentation** | Clarity and visual delivery | Clean space-grade design with intuitive color coding, beginner and expert modes, and seamless performance on phones and desktop.|
+| **Presentation** | Clarity and visual delivery | Clean space-grade design with intuitive color coding, beginner and expert modes, a one-minute guided tour for first-time visitors, and seamless performance on phones and desktop.|
 
 ##  Use of Super Intelligence tools
 
@@ -210,6 +219,8 @@ python3 -m http.server 8000        # or: npx serve .
 
 **Use the web app version at:**
 https://starvulkan.github.io/Aphelion-Lunar-Landing-Navigator/
+
+First time? Press **Tour** in the top bar. Para español, elige **ES**.
 
 ##  Project layout
 
