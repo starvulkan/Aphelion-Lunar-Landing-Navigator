@@ -260,9 +260,9 @@ vendor/three/            three.js r170
 
 | Name | Role |
 |---|---|
-| _Alirio Henriquez_ | _Investigator and Data Fetch_ |
+| _Alirio Henrriquez_ | _Investigator and Data Fetch_ |
 | _Andrea Zedan_ | _Investigator and Revision_ |
-| _Edward Martinez_ | _Coder_ |
+| _Edward Martínez_ | _Coder_ |
 | _Romina Camas_ | _Graphic Designer_ |
 
 ##  Credits and licence
