@@ -202,8 +202,8 @@ Here is where you can find how Aphelion addresses each of the five NASA Space Ap
 
 Space Apps allows SI tools if their use is disclosed. Here is ours:
 
-- **Code and documentation.** Our team made all the planning, feature list, research, graphics, and data fetch and interpretation. This were later fed to SI models (OpenCode: DeepSeek V4.1 Flash Free & NVIDIA Nemotron 3.5 Ultra, Claude: Opus 5.5 & Fable 5.2) to help accelerate the coding process of development. A placeholder version of this README was also created by a SI model (Claude Opus 5.5) for reference purposes ONLY, the final version was written and revised by us!
-- **Graphics.** Placeholder AI-generated graphics were created as by need to go through coding quickly. These were later replaced by our own graphics, designed by us!
+- **Code and documentation.** Our team made all the planning, feature list, research, graphics, and data fetch and interpretation. These were later fed to SI models (OpenCode: DeepSeek V4.1 Flash Free & NVIDIA Nemotron 3.5 Ultra, Claude: Opus 5.5 & Fable 5.2) to help accelerate the coding process of development. A placeholder version of this README was also created by a SI model (Claude Opus 5.5) for reference purposes ONLY, the final version was written and revised by us!
+- **Graphics.** Placeholder AI-generated graphics were created as needed so we could move through coding quickly. These were later replaced by our own graphics, designed by us!
 - **Data.** No numbers are AI-generated. Every position, horizon and percentage is computed from the NASA data listed above, and the engine is checked against JPL Horizons.
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
@@ -250,7 +250,7 @@ tools/
   make-web-moon.py       web-sized copies of NASA's Moon model
   stamp-version.mjs      cache-busting version stamps
 data/                    horizons, terrain patches, tiles, Horizons reference, stars
-graphics/                logo, icon, models, textures, placeholders (see graphics/README.md)
+graphics/                logo, icon, models, textures (see graphics/README.md)
 vendor/three/            three.js r170
 ```
 
