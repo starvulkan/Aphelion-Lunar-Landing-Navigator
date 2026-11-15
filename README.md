@@ -220,7 +220,7 @@ python3 -m http.server 8000        # or: npx serve .
 **Use the web app version at:**
 https://starvulkan.github.io/Aphelion-Lunar-Landing-Navigator/
 
-First time? Press **Tour** in the top bar. Para español, elige **ES**.
+First time? Press **Tour** in the top bar. Para español, elige **ES** (disponible únicamente para modo Learn).
 
 ##  Project layout
 
