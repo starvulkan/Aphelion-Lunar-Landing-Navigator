@@ -1,6 +1,6 @@
 
 <p align="center">
-  <img src="graphics/readme/banner.svg" alt="Aphelion. Land where the Sun never sets. The real terrain horizon of the Shackleton–de Gerlache ridge, with the Sun skimming it and Earth bobbing above it over one month." width="100%">
+  <img src="graphics/readme/APHELION(1).png" alt="Aphelion. Land where the Sun never sets. The real terrain horizon of the Shackleton–de Gerlache ridge, with the Sun skimming it and Earth bobbing above it over one month." width="100%">
 </p>
 
 <p align="center">
