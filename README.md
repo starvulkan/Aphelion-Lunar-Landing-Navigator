@@ -256,7 +256,7 @@ vendor/three/            three.js r170
 
 ##  Team
 
-**Team Aphelion** · NASA Space Apps Challenge 2026 · Tegucigalpa, Honduras
+**Aphelion Labs** · NASA Space Apps Challenge 2026 · Tegucigalpa, Honduras
 
 | Name | Role |
 |---|---|
