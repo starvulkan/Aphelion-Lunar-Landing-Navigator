@@ -8,7 +8,7 @@ export const LESSONS = [
     id: 'why-pole',
     title: 'Why everyone wants the south pole',
     lede: 'The Moon barely tilts, so near its poles the Sun never climbs high. That makes some places almost always lit and others never lit at all.',
-    image: 'graphics/lesson-01-south-pole.svg',
+    image: 'graphics/lesson-01-south-pole.png',
     body: `
       <p>The Moon's spin axis is tilted only <strong>1.54°</strong> from the plane of Earth's orbit around the Sun (Earth's is tilted 23.4°). Stand near a lunar pole and the <span class="sun-word">Sun</span> just skims around the horizon, never rising more than a degree or two.</p>
       <p>That produces two kinds of extreme places only a few kilometres apart:</p>
@@ -32,7 +32,7 @@ export const LESSONS = [
     id: 'horizon',
     title: 'How to read the horizon view',
     lede: 'Azimuth says which way to look. Elevation says how high. The terrain line decides whether you can actually see it.',
-    image: 'graphics/lesson-02-horizon.svg',
+    image: 'graphics/lesson-02-horizon.png',
     body: `
       <p>Every point in the sky has two numbers. <strong>Azimuth</strong> is the compass direction, measured clockwise from north (east is 90°, south 180°, west 270°). <strong>Elevation</strong> is the angle above the horizon: 0° is level, 90° is straight overhead.</p>
       <p>On a perfectly smooth Moon, the horizon of someone standing 2 m tall would be only <strong>2.6 km</strong> away, about half the distance on Earth, because the Moon is smaller and curves away faster. Real terrain changes everything: a mountain 100 km away can rise above that line and block the <span class="sun-word">Sun</span>.</p>
@@ -51,7 +51,7 @@ export const LESSONS = [
     id: 'lunar-day',
     title: 'One lunar day lasts a month',
     lede: 'The Moon turns once for every trip around Earth, so the Sun takes 29.5 Earth days to come back to the same spot in its sky.',
-    image: 'graphics/lesson-03-lunar-day.svg',
+    image: 'graphics/lesson-03-lunar-day.png',
     body: `
       <p>The Moon is <strong>tidally locked</strong>: it spins exactly once per orbit, which is why we always see the same face. Measured against the stars, one turn takes 27.3 days. Measured against the Sun (sunrise to sunrise), it takes <strong>29.53 days</strong>, because the Earth–Moon pair is also moving around the Sun.</p>
       <p>Near the equator that means roughly two weeks of daylight followed by two weeks of night. The <span class="sun-word">Sun</span> moves only about 12° across the sky per Earth day.</p>
@@ -70,7 +70,7 @@ export const LESSONS = [
     id: 'polar-sun',
     title: 'The Sun at the pole: a year-long wobble',
     lede: 'At the pole the Sun circles the horizon once a lunar day, while its height drifts between about −1.5° and +1.5° over the year.',
-    image: 'graphics/lesson-04-polar-sun.svg',
+    image: 'graphics/lesson-04-polar-sun.png',
     body: `
       <p>Exactly at the pole, the <span class="sun-word">Sun</span> goes all the way around the horizon once every 29.5 days. Its elevation hardly changes during that loop. Over a longer cycle of about <strong>346.6 days</strong> it slowly rises to about <strong>+1.5°</strong> and sinks to about <strong>−1.5°</strong>, because of the 1.54° tilt.</p>
       <p>So the south pole has seasons. In southern lunar "summer" the Sun is slightly above a smooth horizon; in "winter" it is slightly below. A difference of 1–2° sounds tiny, but with ridges on the horizon that small change decides whether a solar panel gets light or not.</p>
@@ -88,7 +88,7 @@ export const LESSONS = [
     id: 'earth',
     title: 'Where is Earth in the lunar sky?',
     lede: 'Earth barely moves, but it does wobble. Near the poles that wobble makes Earth rise and set about twice a month.',
-    image: 'graphics/lesson-05-earth.svg',
+    image: 'graphics/lesson-05-earth.png',
     body: `
       <p>Because the Moon is tidally locked, <span class="earth-word">Earth</span> hangs in nearly the same place in the sky as seen from any spot on the near side. It does not rise and set every day the way the Sun does.</p>
       <p>It does wobble. This is called <strong>libration</strong>. The Moon's orbit is an ellipse, so its spin and its orbital motion drift in and out of step, swinging Earth up to about <strong>±7.9°</strong> east–west. The Moon's equator is tilted to its orbit, nodding Earth about <strong>±6.7°</strong> north–south over 27.2 days.</p>
@@ -106,7 +106,7 @@ export const LESSONS = [
     id: 'power',
     title: 'Solar power: angle is everything',
     lede: 'At the pole, a flat solar panel on the ground gets almost nothing. Stand it upright and it gets almost everything.',
-    image: 'graphics/lesson-06-power.svg',
+    image: 'graphics/lesson-06-power.png',
     body: `
       <p>Sunlight near the Moon carries about <strong>1,361 W per square metre</strong>. How much of that lands on a panel depends on the angle between the panel and the rays:</p>
       <ul>
@@ -126,7 +126,7 @@ export const LESSONS = [
     id: 'comms',
     title: 'Talking to Earth',
     lede: 'Direct-to-Earth radio needs a straight line from the antenna to Earth. Terrain in the way means silence.',
-    image: 'graphics/lesson-07-comms.svg',
+    image: 'graphics/lesson-07-comms.png',
     body: `
       <p>A lander sends data <strong>direct to Earth (DTE)</strong> to big dishes such as NASA's Deep Space Network. Radio signals travel in straight lines here, so the antenna needs a clear view of <span class="earth-word">Earth</span> above the local terrain. Light takes about <strong>1.3 seconds</strong> each way.</p>
       <p>At the pole Earth is low, so a ridge only a few degrees high can block it for days. Mission planners look for sites and dates where Earth stays up during the critical moments (especially landing) and plan around the times when it is down.</p>
@@ -142,7 +142,7 @@ export const LESSONS = [
     id: 'terrain',
     title: 'Small moves, big changes',
     lede: 'Near the pole, moving a few kilometres can turn months of sunlight into permanent darkness.',
-    image: 'graphics/lesson-08-terrain.svg',
+    image: 'graphics/lesson-08-terrain.png',
     body: `
       <p>The lab below loads three real places from the same LOLA terrain map and runs a full lunar day for each one, starting now. They are only a few tens of kilometres apart.</p>
       <ul>
@@ -162,7 +162,7 @@ export const LESSONS = [
     id: 'planning',
     title: 'Planning a landing',
     lede: 'Pick the site, pick the day, check the light and the link, then ask what happens if the launch slips.',
-    image: 'graphics/lesson-09-planning.svg',
+    image: 'graphics/lesson-09-planning.png',
     body: `
       <p>Mission planners ask the same questions this app answers:</p>
       <ul>
@@ -183,7 +183,7 @@ export const LESSONS = [
     id: 'seasons',
     title: 'The Moon has seasons too',
     lede: 'The Sun drifts 1.5° north and south of the lunar equator. At the south pole that small drift is the difference between summer light and winter dark.',
-    image: 'graphics/lesson-10-seasons.svg',
+    image: 'graphics/lesson-10-seasons.png',
     body: `
       <p>Mission planners track the <strong>sub-solar point</strong>: the spot on the Moon where the <span class="sun-word">Sun</span> is exactly overhead. Over about 347 days it wanders from roughly 1.5° north of the lunar equator to 1.5° south and back. When it is south, the south pole is tilted toward the Sun: <strong>southern summer</strong>.</p>
       <p>Our team's study of 20 years of NASA/JPL Horizons data turns this into a simple index, the <strong>Southern Astronomical Opportunity Quotient (SAOQ)</strong>: 0 % when the sub-solar point is on or north of the equator, 100 % when it is about 1.59° south. Dates with SAOQ of 90 % or more are the first ones worth checking.</p>
@@ -205,7 +205,7 @@ export const LESSONS = [
  */
 export const CHALLENGES = [
   {
-    id: 'lights-on', title: 'Keep the lights on', badge: 'graphics/badge-lights-on.svg', xp: 60,
+    id: 'lights-on', title: 'Keep the lights on', badge: 'graphics/badge-lights-on.png', xp: 60,
     task: 'Find a south-polar site (south of 80°S) and a landing time where, over a 7-day stay, the Sun is up at least 95 % of the time AND Earth is in view at least 50 % of the time.',
     hint: 'Try high ground (Malapert Massif or the connecting ridge), then use the "Best landing days" grid.',
     days: 7,
@@ -216,21 +216,21 @@ export const CHALLENGES = [
     }
   },
   {
-    id: 'blackout', title: 'Radio silence', badge: 'graphics/badge-blackout.svg', xp: 40,
+    id: 'blackout', title: 'Radio silence', badge: 'graphics/badge-blackout.png', xp: 40,
     task: 'Find any site where Earth is never in view during a whole lunar day (29.5 days).',
     hint: 'Where on the Moon does Earth never rise?',
     days: 29.53,
     check: ({ site, tl }) => ({ ok: tl.earthFraction === 0, detail: `${site.name}: Earth in view ${(tl.earthFraction * 100).toFixed(1)} % of a lunar day.` })
   },
   {
-    id: 'eternal-night', title: 'Eternal night', badge: 'graphics/badge-eternal-night.svg', xp: 50,
+    id: 'eternal-night', title: 'Eternal night', badge: 'graphics/badge-eternal-night.png', xp: 50,
     task: 'Find a site where the Sun never clears the terrain during a whole lunar day.',
     hint: 'Look inside a polar crater.',
     days: 29.53,
     check: ({ site, tl }) => ({ ok: tl.sunFraction === 0, detail: `${site.name}: sunlight ${(tl.sunFraction * 100).toFixed(1)} % of a lunar day.` })
   },
   {
-    id: 'apollo-morning', title: 'Apollo morning', badge: 'graphics/badge-apollo-morning.svg', xp: 50,
+    id: 'apollo-morning', title: 'Apollo morning', badge: 'graphics/badge-apollo-morning.png', xp: 50,
     task: 'Pick an Apollo landing site and set a landing time when the Sun is between 5° and 15° above the horizon and still rising, like the Apollo crews had.',
     hint: 'Use the −1 d / +1 d buttons; the Sun rises about 12° per Earth day near the equator.',
     days: 1,
@@ -253,11 +253,11 @@ export const RANKS = [
 ];
 
 export const BADGES = [
-  { id: 'first-light', name: 'First light', img: 'graphics/badge-first-light.svg', how: 'Finish your first lesson' },
-  { id: 'sharp', name: 'Sharp eye', img: 'graphics/badge-sharp-eye.svg', how: 'Answer every question in a quiz right first time' },
-  { id: 'flight-plan', name: 'Flight plan', img: 'graphics/badge-flight-plan.svg', how: 'Finish all lessons' },
-  { id: 'lights-on', name: 'Lights on', img: 'graphics/badge-lights-on.svg', how: 'Mission: Keep the lights on' },
-  { id: 'blackout', name: 'Radio silence', img: 'graphics/badge-blackout.svg', how: 'Mission: Radio silence' },
-  { id: 'eternal-night', name: 'Eternal night', img: 'graphics/badge-eternal-night.svg', how: 'Mission: Eternal night' },
-  { id: 'apollo-morning', name: 'Apollo morning', img: 'graphics/badge-apollo-morning.svg', how: 'Mission: Apollo morning' }
+  { id: 'first-light', name: 'First Light', img: 'graphics/badge-first-light.png', how: 'Finish your first lesson' },
+  { id: 'sharp', name: 'Sharp Eye', img: 'graphics/badge-sharp-eye.png', how: 'Answer every question in a quiz right first time' },
+  { id: 'flight-plan', name: 'Flight Plan', img: 'graphics/badge-flight-plan.png', how: 'Finish all lessons' },
+  { id: 'lights-on', name: 'Lights On', img: 'graphics/badge-lights-on.png', how: 'Mission: Keep the lights on' },
+  { id: 'blackout', name: 'Total Silence', img: 'graphics/badge-blackout.png', how: 'Mission: Radio silence' },
+  { id: 'eternal-night', name: 'Never Ending Night', img: 'graphics/badge-eternal-night.png', how: 'Mission: Eternal night' },
+  { id: 'apollo-morning', name: 'Mornings', img: 'graphics/badge-apollo-morning.png', how: 'Mission: Apollo morning' }
 ];

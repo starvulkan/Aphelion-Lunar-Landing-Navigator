@@ -1,3 +1,8 @@
+<!-- ======================================================================
+     Aphelion · Lunar Landing Navigator
+     Placeholder README for the team's own version. Graphics in
+     graphics/readme/ are AI-generated placeholders and are watermarked.
+     ====================================================================== -->
 
 <p align="center">
   <img src="graphics/readme/banner.svg" alt="Aphelion. Land where the Sun never sets. The real terrain horizon of the Shackleton–de Gerlache ridge, with the Sun skimming it and Earth bobbing above it over one month." width="100%">
@@ -11,10 +16,13 @@
 <p align="center">
   <img alt="NASA Space Apps 2026" src="https://img.shields.io/badge/NASA_Space_Apps-2026_·_The_Next_Frontier-c9c7db?style=flat-square&labelColor=000000">
   <img alt="Local event" src="https://img.shields.io/badge/local_event-Tegucigalpa,_Honduras-c9c7db?style=flat-square&labelColor=000000">
+  <img alt="No build step" src="https://img.shields.io/badge/build_step-none-c9c7db?style=flat-square&labelColor=000000">
   <img alt="Licence" src="https://img.shields.io/badge/licence-Apache_2.0-c9c7db?style=flat-square&labelColor=000000">
 </p>
 
-<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
+> [!NOTE]
+> **This is a placeholder demo.** It exists so the team can see a complete, working version of the idea and take inspiration from it while building our own. Graphics marked "AI-generated" or "AI-assisted placeholder" will be replaced by the team's final artwork. See [Use of AI](#-use-of-artificial-intelligence).
+
 <br>
 
 <h3 align="center"><em>At the Moon's south pole the Sun never climbs more than a couple of degrees.<br>One ridge gets light for months. The crater beside it has been dark for billions of years.<br>Aphelion shows you which is which, for any place and any day.</em></h3>
@@ -23,17 +31,33 @@
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
-##  The challenge
+## 🧭 Contents
+
+| | | |
+|---|---|---|
+| [The challenge](#-the-challenge) | [What we built](#-what-we-built-high-level-summary) | [Tour](#-a-quick-tour) |
+| [How it works](#-how-it-works) | [The overall score](#-the-overall-score) | [NASA data](#-nasa-data) |
+| [Other data and tools](#-space-agency-partner-and-other-data) | [Is it right?](#-is-it-right-validity) | [Judging criteria](#-how-it-meets-the-judging-criteria) |
+| [Use of AI](#-use-of-artificial-intelligence) | [Run it](#-run-it-yourself) | [Project layout](#-project-layout) |
+| [What's next](#-whats-next) | [Team](#-team) | [Credits and licence](#-credits-and-licence) |
+
+<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
+
+## 🌗 The challenge
 
 Missions to the lunar south pole live or die by two things: **sunlight** for power and a **line of sight to Earth** for radio. Near the pole the Sun and Earth both sit almost on the horizon, so a ridge a few kilometres away can decide whether a lander is lit, cold, or cut off. Tools that can answer this already exist, but they are built for specialists and slow to use.
 
 The challenge asked for an intuitive web app that lets **mission planners, educators and the public** compare landing sites and dates quickly, seeing where the Sun and Earth are relative to the horizon, how long power and direct-to-Earth contact last, and how that changes over a lunar day or a season.
 
-<p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
+<p align="center">
+  <img src="graphics/readme/one-month.svg" alt="One month at three south-pole sites a few kilometres apart. The connecting ridge has sunlight 100 % of the time and Earth 47 %. Malapert Massif has sunlight 100 % and Earth 63 %. Shackleton crater floor has neither." width="100%">
+</p>
 
-##  What we built (high-level summary)
+<p align="center"><sub>Three places a few kilometres apart, the same month, very different missions. Real LOLA terrain, computed by Aphelion.</sub></p>
 
-**Aphelion** runs entirely in the browser with zero server setup. Just drop in coordinates (or pick a curated site), set your dates, and the app instantly calculates:
+## 🚀 What we built (high-level summary)
+
+**Aphelion** is a free web app that runs entirely in the browser. Pick a landing site (or type any coordinates), pick a date and a surface stay, and it shows:
 
 - **Where the Sun and Earth are**, against the **real terrain horizon** of that exact spot, built from NASA's Lunar Orbiter Laser Altimeter (LOLA) data.
 - **How much power and radio contact the stay gets**: sunlight %, Earth-in-view %, both at once, the longest dark spell, and the time to the next sunset or Earthset.
@@ -51,11 +75,9 @@ It has two modes for two audiences:
 
 **Why it matters:** the same few kilometres can mean months of light or permanent darkness. Making that visible in seconds helps planners screen options, and helps everyone else understand why the Moon's south pole is so hard, and so worth it.
 
-**Fun Fact!** The UI for Learn Mode and Educational Mode in Mission Mode takes inspiration from UI elements and animations from Lando Norris's official website! https://landonorris.com/
-
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
-##  A quick tour
+## 📸 A quick tour
 
 <table>
   <tr>
@@ -71,14 +93,17 @@ It has two modes for two audiences:
     <td><img src="graphics/readme/calendar.jpg" alt="Landing calendar with two months of days shaded by score"><br><sub><b>Landing calendar.</b> Every day you could land, shaded by sunlight, Earth contact or both.</sub></td>
   </tr>
   <tr>
-    <td><img src="graphics/readme/learn-hub.jpg" alt="Learn mode home: Land where the Sun never sets"><br><sub><b>Learn mode.</b> A course in ten short lessons, with ranks and badges.</sub></td>
-    <td><img src="graphics/readme/lesson.jpg" alt="A lesson page with text and a live lab"><br><sub><b>Lessons with live labs.</b> Each lab runs on the same engine and terrain as Mission mode.</sub></td>
+    <td><img src="graphics/readme/learn-hub.jpg" alt="Learn mode: lesson cards with the team's illustrations"><br><sub><b>Learn mode.</b> A course in ten short lessons, each with its own illustration by the team.</sub></td>
+    <td><img src="graphics/readme/missions.jpg" alt="Learn mode missions with the team's round badges"><br><sub><b>Missions and badges.</b> Four missions checked against your real scenario, each with a badge designed by the team.</sub></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="graphics/readme/lesson.jpg" alt="A lesson page with text, the team's illustration and the lesson list"><br><sub><b>Lessons with live labs.</b> Each lab runs on the same engine and terrain as Mission mode.</sub></td>
   </tr>
 </table>
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
-##  How it works
+## ⚙️ How it works
 
 Everything runs **in the browser**. There is no server and no build step; GitHub Pages serves static files.
 
@@ -112,9 +137,9 @@ flowchart LR
 3. **Is it visible?** The Sun or Earth counts as visible when the centre of its disc is above that terrain horizon. Doing this every few minutes over the stay gives the timeline, the percentages, the next rise or set, and the longest dark spell.
 4. **What's the season?** The south pole has a mild but real season. The app uses our team report's *SAOQ* index (how far south the sub-solar point is) and shows a whole year for the site, the best landing day, and how strongly the site follows the season.
 
-##  The overall score
+## 🎯 The overall score
 
-One number to compare options, extending the balance score of our earlier SELENE research prototype (which used √(sunlight × Earth)):
+One number to compare options, extending the balance score of the team's earlier SELENE prototype (which used √(sunlight × Earth)):
 
 $$
 \text{score} = 100 \times P^{\,w_P}\, C^{\,w_C}\, N^{\,w_N}\, T^{\,w_T}
@@ -131,7 +156,7 @@ It is a geometric mean, so a site with **no** sunlight or **no** Earth contact s
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
-##  NASA data
+## 🛰️ NASA data
 
 | What | NASA source | How Aphelion uses it |
 |---|---|---|
@@ -144,7 +169,7 @@ It is a geometric mean, so a site with **no** sunlight or **no** Earth contact s
 
 Full citations, versions and processing for every item: **[DATA_SOURCES.md](DATA_SOURCES.md)**.
 
-##  Space agency partner and other data
+## 🤝 Space agency partner and other data
 
 | Resource | Use | Licence or terms |
 |---|---|---|
@@ -158,7 +183,7 @@ Full citations, versions and processing for every item: **[DATA_SOURCES.md](DATA
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
-##  Is it right? (validity)
+## ✅ Is it right? (validity)
 
 We wanted no guesswork, so every claim can be checked **outside the app**:
 
@@ -173,9 +198,9 @@ Do it yourself, step by step, with JPL Horizons, LROC QuickMap and Moon Trek: **
 
 **Known limits, stated in the app too:** terrain is 240 m per pixel near the pole, so boulders and small craters next to a lander are not resolved; visibility uses the centre of the Sun's and Earth's discs; the overall score is a screening aid.
 
-##  How it meets the judging criteria
+## 🏆 How it meets the judging criteria
 
-Here is where you can find how Aphelion addresses each of the five NASA Space Apps judging criteria:
+NASA Space Apps judges projects on five criteria. This is where to look for each:
 
 | Criterion | What judges look for | Where Aphelion answers it |
 |---|---|---|
@@ -183,19 +208,21 @@ Here is where you can find how Aphelion addresses each of the five NASA Space Ap
 | **Creativity** | Originality | One engine, two audiences: a flight-console view and a game-like landing report of the *same* scenario; the season index from our own report built into a live year chart; Moon, Earth and Sun in true directions |
 | **Validity** | Technical quality and feasibility | Real LOLA terrain, ephemeris checked against JPL Horizons on every deploy, every number cited, a self-check guide, no server to maintain |
 | **Relevance** | Fit with the challenge and NASA's mission | Every item in the brief: curated and custom sites, side-by-side comparison, dates and seasons, time to sunset and Earthset, Sun and Earth vs the horizon, 2D and 3D views, timeline animation, beginner and expert levels. Built around Artemis south-pole regions |
-| **Presentation** | Clarity and visual delivery | Clean space-grade design with intuitive color coding, beginner and expert modes, and seamless performance on phones and desktop.|
+| **Presentation** | Clarity and visual delivery | Colour always means the same thing (pink = Sun and power, light blue = Earth and radio, indigo = terrain), plain-language Educational level, works on phones |
 
-##  Use of Super Intelligence tools
+## 🤖 Use of artificial intelligence
 
-Space Apps allows SI tools if their use is disclosed. Here is ours:
+Space Apps allows AI tools if their use is disclosed. Here is ours:
 
-- **Code and documentation.** Our team made all the planning, feature list, research, graphics, and data fetch and interpretation. This were later fed to SI models (OpenCode: DeepSeek V4.1 Flash Free & NVIDIA Nemotron 3.5 Ultra, Claude: Opus 5.5 & Fable 5.2) to help accelerate the coding process of development. A placeholder version of this README was also created by a SI model (Claude Opus 5.5) for reference purposes ONLY, the final version was written and revised by us!
-- **Graphics.** Placeholder AI-generated graphics were created as by need to go through coding quickly. These were later replaced by our own graphics, designed by us!
+- **Code and documentation.** This placeholder version was built with AI coding assistants: first **OpenCode**, then **Claude** (Anthropic). The team set the goals, design direction and constraints, supplied the data report and the SELENE prototype, and reviewed the results. The AI wrote most of the code, the lesson text and this README.
+- **Graphics.** The logo, icon, the ten lesson illustrations and the seven badges are the **team's own artwork**. The README images in `graphics/readme/` and the contour background in Learn mode were generated by AI-written code and carry a visible **"AI-generated"** or **"AI-assisted placeholder"** watermark until the team replaces them. No AI-generated content uses or alters NASA logos, flags or mission insignia.
 - **Data.** No numbers are AI-generated. Every position, horizon and percentage is computed from the NASA data listed above, and the engine is checked against JPL Horizons.
 
 <p align="center"><img src="graphics/readme/divider.svg" width="100%" alt=""></p>
 
-##  Run and try it yourself
+## 💻 Run it yourself
+
+No install, no build, no dependencies.
 
 ```bash
 git clone https://github.com/starvulkan/Aphelion-Lunar-Landing-Navigator.git
@@ -204,10 +231,42 @@ python3 -m http.server 8000        # or: npx serve .
 # open http://localhost:8000
 ```
 
-**Use the web app version at:**
-https://starvulkan.github.io/Aphelion-Lunar-Landing-Navigator/
+> [!TIP]
+> Opening `index.html` straight from disk won't work: browsers block the data files over `file://`. Use any small local server, like the one above.
 
-##  Project layout
+<details>
+<summary><b>Optional: real terrain for custom coordinates</b></summary>
+
+The 36 curated sites work out of the box. To get real terrain for **any** coordinates locally (the deploy does this automatically), run once with internet access:
+
+```bash
+node tools/build-data.mjs     # downloads ~185 MB of LOLA data into .cache/, writes data/dem/
+```
+
+Without these tiles, custom sites fall back to a smooth-sphere horizon and the app says so.
+</details>
+
+<details>
+<summary><b>Check the engine yourself</b></summary>
+
+```bash
+node tools/validate.mjs           # against the stored JPL Horizons table
+node tools/validate.mjs --live    # against fresh Horizons values (needs internet)
+node tools/validate-season.mjs    # season analysis vs the team report
+```
+</details>
+
+<details>
+<summary><b>Deploy to GitHub Pages</b></summary>
+
+1. **Settings → Pages → Source: GitHub Actions.**
+2. Push to `main`. The workflow in `.github/workflows/deploy.yml` downloads the LOLA data, rebuilds `data/`, checks the engine against JPL Horizons (the deploy fails if it is off by more than 0.1°), stamps file versions so browsers never mix old and new files, and publishes.
+3. It also runs daily to refresh the Horizons reference.
+
+If you edit CSS or JS by hand and deploy some other way, run `node tools/stamp-version.mjs` first.
+</details>
+
+## 🗂️ Project layout
 
 ```
 index.html               app shell (Mission + Learn)
@@ -236,24 +295,33 @@ graphics/                logo, icon, models, textures, placeholders (see graphic
 vendor/three/            three.js r170
 ```
 
-##  Team
+## 🔭 What's next
+
+- [x] Team artwork for the lesson illustrations and badges
+- [ ] Replace the remaining placeholder graphics (README images, Learn background)
+- [ ] Record the 30-second demo video (or 7-slide deck) for the submission
+- [ ] Higher-resolution terrain (LOLA 20 m polar products) around the Artemis regions
+- [ ] Partial Sun and Earth discs (how much of the disc is above the ridge, not just its centre)
+- [ ] Relay-satellite visibility for when Earth is below the horizon
+- [ ] Spanish version of Learn mode for classrooms in Honduras
+
+## 👩‍🚀 Team
 
 **Team Aphelion** · NASA Space Apps Challenge 2026 · Tegucigalpa, Honduras
 
 | Name | Role |
 |---|---|
-| _Alirio Henriquez_ | _Investigator and Data Fetch_ |
-| _Andrea Zedan_ | _Investigator and Revision_ |
-| _Edward Martinez_ | _Coder_ |
-| _Romina Camas_ | _Graphic Designer_ |
+| _Team member_ | _Role_ |
+| _Team member_ | _Role_ |
+| _Team member_ | _Role_ |
 
-##  Credits and licence
+<sub>Placeholder: the team fills this in.</sub>
+
+## 📜 Credits and licence
 
 Code: **Apache License 2.0** (see [LICENSE](LICENSE)). Third-party data and libraries keep their own terms, listed in [DATA_SOURCES.md](DATA_SOURCES.md).
 
 The Moon model is credited to **NASA's Goddard Space Flight Center** (SVS 14959). The Earth image is **NASA Blue Marble: Next Generation**, by Reto Stöckli, NASA Earth Observatory. Terrain is from the **LRO LOLA** team via the PDS Geosciences Node. Sun and Earth reference positions come from **NASA/JPL Horizons**. This project is not endorsed by NASA and uses no NASA logos or insignia.
-
-**About the SELENE research prototype:** SELENE was a demo app made for research and practice purposes, as to get familiar with what we would be doing and programming during the event. As to comply with competition rules, NO parts of the codebase for Aphelion LLN use direct code from SELENE, as it was created before the event. SELENE was created for research and feature testing purposes only.
 
 <br>
 

@@ -1,14 +1,14 @@
 /**
  * Aphelion — app shell and Mission mode.
  */
-import { EphemerisCalculator } from './ephemeris.js?v=202611142146';
-import { TerrainService } from './terrain.js?v=202611142146';
-import { SITES, CATEGORIES, searchSites } from './sites.js?v=202611142146';
-import { Panorama, Track, SeasonChart, drawSky, fmtDeg } from './viz.js?v=202611142146';
-import { seasonYear, siteYear, correlation, saoq } from './season.js?v=202611142146';
-import { landingScore, slopeAtCentre, PRIORITIES } from './score.js?v=202611142146';
-import { Store } from './store.js?v=202611142146';
-import { Learn } from './learn.js?v=202611142146';
+import { EphemerisCalculator } from './ephemeris.js?v=202611150026';
+import { TerrainService } from './terrain.js?v=202611150026';
+import { SITES, CATEGORIES, searchSites } from './sites.js?v=202611150026';
+import { Panorama, Track, SeasonChart, drawSky, fmtDeg } from './viz.js?v=202611150026';
+import { seasonYear, siteYear, correlation, saoq } from './season.js?v=202611150026';
+import { landingScore, slopeAtCentre, PRIORITIES } from './score.js?v=202611150026';
+import { Store } from './store.js?v=202611150026';
+import { Learn } from './learn.js?v=202611150026';
 
 const DAY = 86400000;
 const OBSERVER_M = 2;
@@ -557,7 +557,7 @@ class App {
 
   async initScene() {
     try {
-      const mod = await import('./scene3d.js?v=202611142146');
+      const mod = await import('./scene3d.js?v=202611150026');
       if (!mod.webglAvailable()) throw new Error('WebGL is not available in this browser');
       this.scene3d = new mod.Scene3D($('#scene-canvas'));
       this.scene3d.setExaggeration(Number($('#exag').value));
