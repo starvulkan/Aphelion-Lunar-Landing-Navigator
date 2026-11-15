@@ -220,7 +220,7 @@ python3 -m http.server 8000        # or: npx serve .
 **Use the web app version at:**
 https://starvulkan.github.io/Aphelion-Lunar-Landing-Navigator/
 
-First time? Press **Tour** in the top bar. Para español, elige **ES**.
+First time? Press **Tour** in the top bar. Para español, elige **ES** (disponible únicamente para modo Learn).
 
 ##  Project layout
 
@@ -256,13 +256,13 @@ vendor/three/            three.js r170
 
 ##  Team
 
-**Team Aphelion** · NASA Space Apps Challenge 2026 · Tegucigalpa, Honduras
+**Aphelion Labs** · NASA Space Apps Challenge 2026 · Tegucigalpa, Honduras
 
 | Name | Role |
 |---|---|
-| _Alirio Henriquez_ | _Investigator and Data Fetch_ |
+| _Alirio Henrriquez_ | _Investigator and Data Fetch_ |
 | _Andrea Zedan_ | _Investigator and Revision_ |
-| _Edward Martinez_ | _Coder_ |
+| _Edward Martínez_ | _Coder_ |
 | _Romina Camas_ | _Graphic Designer_ |
 
 ##  Credits and licence
